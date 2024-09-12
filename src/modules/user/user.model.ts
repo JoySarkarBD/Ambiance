@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a User document
 interface IUser extends Document {
+  _id: string;
   first_name: string;
   last_name: string;
   email: string;
@@ -9,6 +10,7 @@ interface IUser extends Document {
   avatar?: string;
   status?: string;
   role: 'admin' | 'user';
+  activationToken?: string;
 }
 
 // Define the User schema
@@ -44,6 +46,10 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       enum: ['admin', 'user'],
       required: true,
+    },
+    activationToken: {
+      type: String,
+      default: '',
     },
   },
   {

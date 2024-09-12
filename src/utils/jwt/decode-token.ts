@@ -1,16 +1,34 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
-import config from 'src/config/config';
+import config from '../../config/config';
 
 /**
  * Verifies a JWT token using a secret key.
  *
  * @param token - The JWT token to verify.
- * @returns {JwtPayload | string | null} - The decoded token payload if valid, null if verification fails.
+ * @returns {Promise<{ email: string; userId: string; role: string } | null>} - The decoded token payload if valid, null if verification fails.
  */
-const DecodeToken = async (token: string): Promise<JwtPayload | string | null> => {
+const DecodeToken = async (
+  token: string
+): Promise<{ email: string; userId: string; role: string } | null> => {
   try {
     const KEY: string = config.JWT_SECRET;
-    return jwt.verify(token, KEY);
+    const decoded = jwt.verify(token, KEY) as JwtPayload;
+
+    // Ensure the token contains the expected properties
+    if (
+      decoded &&
+      typeof decoded === 'object' &&
+      'email' in decoded &&
+      'user_id' in decoded &&
+      'role' in decoded
+    ) {
+      return {
+        email: decoded.email as string,
+        userId: decoded.user_id as string,
+        role: decoded.role as string,
+      };
+    }
+    return null;
   } catch (error) {
     return null;
   }

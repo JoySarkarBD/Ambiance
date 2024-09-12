@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from 'express';
-import ServerResponse from 'src/helpers/responses/custom-response';
-import DecodeToken from 'src/utils/jwt/decode-token';
+import ServerResponse from '../../helpers/responses/custom-response';
+import DecodeToken from '../../utils/jwt/decode-token';
 
 // Extend the Request interface to include a user property
 interface AuthenticatedRequest extends Request {
   user?: {
-    email: string;
     _id: string;
+    email: string;
+    role: string;
   };
 }
 
@@ -39,17 +40,27 @@ const isAuthorized = async (
 
     // If token decoding fails, respond with unauthorized
     if (!decoded) {
-      return ServerResponse(res, false, 401, 'Unauthorized');
+      return ServerResponse(res, false, 401, 'Unauthorized: Invalid Token');
     }
 
-    // Extract user information from the decoded token
-    const { email, _id } = decoded as { email: string; _id: string };
-
-    // Attach user information to the request object
-    req.user = { email, _id };
-
-    // Proceed to the next middleware or route handler
-    next();
+    // Ensure decoded token contains necessary fields
+    if (
+      typeof decoded === 'object' &&
+      'email' in decoded &&
+      'userId' in decoded &&
+      'role' in decoded
+    ) {
+      // Attach user information to the request object
+      req.user = {
+        email: decoded.email as string,
+        _id: decoded.userId as string,
+        role: decoded.role as string,
+      };
+      // Proceed to the next middleware or route handler
+      return next();
+    } else {
+      return ServerResponse(res, false, 401, 'Unauthorized: Invalid Token Payload');
+    }
   } catch (error) {
     console.error('Authentication error:', error);
 

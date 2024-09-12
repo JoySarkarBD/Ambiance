@@ -7,88 +7,107 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodAuthSchema = z
   .object({
-    email: z.string().email({ message: 'Invalid email address' }).optional(),
-    password: z
-      .string()
-      .min(6, { message: 'Password must be at least 6 characters long' })
-      .optional(),
-    first_name: z.string().min(1, { message: 'First name is required' }).optional(),
-    last_name: z.string().min(1, { message: 'Last name is required' }).optional(),
-    status: z
-      .enum(['active', 'inactive'], { message: 'Status must be either active or inactive' })
-      .optional(),
+    email: z.string().email({ message: 'Invalid email address' }),
+    password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
+    first_name: z.string().min(1, { message: 'First name is required' }),
+    last_name: z.string().min(1, { message: 'Last name is required' }),
     previous_password: z
       .string()
-      .min(6, { message: 'Previous password must be at least 6 characters long' })
-      .optional(),
-    new_password: z
-      .string()
-      .min(6, { message: 'New password must be at least 6 characters long' })
-      .optional(),
+      .min(6, { message: 'Previous password must be at least 6 characters long' }),
+    new_password: z.string().min(6, { message: 'New password must be at least 6 characters long' }),
+    token: z.string().uuid({ message: 'Invalid activation token format' }),
   })
   .strict();
 
 /**
- * Creates a validator middleware for Zod schemas.
- * @param schema The Zod schema to validate against.
- * @returns Middleware for Express
+ * Middleware function to validate login using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
  */
-const createValidator = (schema: z.ZodSchema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const result = schema.safeParse(req.body);
-    if (!result.success) {
-      return zodErrorHandler(req, res, result.error);
-    }
-    return next();
-  };
+export const validateLogin = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodAuthSchema
+    .pick({ email: true, password: true })
+    .safeParse(req.body);
+
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
+
+  // If validation passed, proceed to the next middleware function
+  return next();
 };
 
-// Specific schemas based on the general `zodAuthSchema`
+/**
+ * Middleware function to validate user registration using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
+ */
+export const validateRegister = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodAuthSchema
+    .pick({ email: true, password: true, first_name: true, last_name: true })
+    .safeParse(req.body);
+
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
+
+  // If validation passed, proceed to the next middleware function
+  return next();
+};
 
 /**
- * Login schema - requires email and password.
+ * Middleware function to validate password reset using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
  */
-const zodLoginSchema = zodAuthSchema.pick({
-  email: true,
-  password: true,
-});
+export const validateResetPassword = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodAuthSchema
+    .pick({ previous_password: true, new_password: true })
+    .safeParse(req.body);
+
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
+
+  // If validation passed, proceed to the next middleware function
+  return next();
+};
 
 /**
- * Register schema - requires first name, last name, email and password.
+ * Middleware function to validate activation token using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
  */
-const zodRegisterSchema = zodAuthSchema.pick({
-  first_name: true,
-  last_name: true,
-  email: true,
-  password: true,
-});
+export const validateActivationToken = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodAuthSchema
+    .pick({ token: true })
+    .safeParse({ token: req.query.token as string });
 
-/**
- * Forget password schema - requires email.
- */
-const zodForgetPasswordSchema = zodAuthSchema.pick({
-  email: true,
-});
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
 
-/**
- * Reset password schema - requires token and new password.
- */
-const zodResetPasswordSchema = zodAuthSchema.pick({
-  previous_password: true,
-  new_password: true,
-});
-
-/**
- * Status update schema - requires status.
- */
-const zodStatusUpdateSchema = zodAuthSchema.pick({
-  status: true,
-});
-
-// Export middleware validators
-export const validateLogin = createValidator(zodLoginSchema);
-export const validateRegister = createValidator(zodRegisterSchema);
-export const validateForgetPassword = createValidator(zodForgetPasswordSchema);
-export const validateResetPassword = createValidator(zodResetPasswordSchema);
-export const validateStatusUpdate = createValidator(zodStatusUpdateSchema);
+  // If validation passed, proceed to the next middleware function
+  return next();
+};
 
