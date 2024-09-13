@@ -1,13 +1,13 @@
 import { Request, Response } from 'express';
-import { projectServices } from './project.service';
+import { UploadedFile } from 'express-fileupload';
 import fs from 'fs/promises';
 import mongoose from 'mongoose';
 import path from 'path';
 import { v4 as uuidv4 } from 'uuid';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
-import { UploadedFile } from 'express-fileupload';
 import Project from './project.model';
+import { projectServices } from './project.service';
 
 const MODEL_NAME = 'project';
 
@@ -47,17 +47,17 @@ async function deleteFile(filePath: string): Promise<void> {
 
 // Helper function to handle image update
 async function handleImageUpdate(
-  post: any, // The existing post
+  project: any, // The existing project
   newImages: UploadedFile | UploadedFile[] | undefined,
   imagesToRemove: string[] | undefined
 ): Promise<string[]> {
   // Start with the existing images
-  let updatedImages = [...post.images];
+  let updatedImages = [...project.images];
 
   // Remove specified images from the filesystem and the list
   if (imagesToRemove) {
     for (const imageToRemove of imagesToRemove) {
-      // Check if the image exists in the post
+      // Check if the image exists in the project
       const index = updatedImages.indexOf(imageToRemove);
       if (index > -1) {
         // Remove from list
@@ -122,7 +122,7 @@ export const updateProject = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const project = await Project.findById(id);
   if (!project) {
-    return ServerResponse(res, false, 404, 'Post not found');
+    return ServerResponse(res, false, 404, 'Project not found');
   }
   const { title, subject, skills, description, url } = req.body;
   const images = req.files?.images as UploadedFile | UploadedFile[] | undefined;
@@ -155,9 +155,21 @@ export const updateProject = catchAsync(async (req: Request, res: Response) => {
  */
 export const deleteProject = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Call the service method to delete the project by ID
+
+  // Find the project by ID to get the associated file paths
+  const project = await Project.findById(id);
+  if (!project) {
+    return ServerResponse(res, false, 404, 'Project not found');
+  }
+
+  // Delete the project record from the database
   await projectServices.deleteProject(id);
-  // Send a success response confirming the deletion
+
+  // Delete all image files if images exist
+  for (const imagePath of project.images) {
+    await deleteFile(imagePath);
+  }
+
   ServerResponse(res, true, 200, 'Project deleted successfully');
 });
 
@@ -169,8 +181,31 @@ export const deleteProject = catchAsync(async (req: Request, res: Response) => {
  * @returns {void}
  */
 export const deleteManyProject = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to delete multiple project and get the result
-  await projectServices.deleteManyProject(req.body);
+  // Expecting an object with an `ids` property
+  const { ids }: { ids: string[] } = req.body;
+
+  if (!Array.isArray(ids) || ids.length === 0) {
+    return ServerResponse(res, false, 400, 'No project IDs provided');
+  }
+
+  // Find all projects by IDs to get their associated file paths
+  const projects = await Project.find({ _id: { $in: ids } });
+
+  // Delete each project and associated files
+  await Promise.all(
+    projects.map(async (project) => {
+      // Delete all image files if images exist
+      if (project.images) {
+        for (const imagePath of project.images) {
+          await deleteFile(imagePath);
+        }
+      }
+
+      // Delete the project record from the database
+      await projectServices.deleteProject(req.body.ids);
+    })
+  );
+
   // Send a success response confirming the deletions
   ServerResponse(res, true, 200, 'Resources deleted successfully');
 });
@@ -197,9 +232,45 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const getManyProject = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get multiple project based on query parameters and get the result
-  const result = await projectServices.getManyProject(req.query);
-  // Send a success response with the retrieved resources data
-  ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
+export const getProjects = catchAsync(async (req: Request, res: Response) => {
+  const { user } = req; // Assume req.user is set by authentication middleware
+  const { searchKey, showPerPage, pageNo } = req.query;
+
+  const page = parseInt(pageNo as string, 10);
+  const limit = parseInt(showPerPage as string, 10);
+  const skip = (page - 1) * limit;
+
+  if (user?.role === 'admin') {
+    const filter: any = {};
+    if (searchKey) {
+      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
+      filter.$or = [
+        { title: { $regex: regex } },
+        { url: { $regex: regex } },
+        { subject: { $regex: regex } },
+        { description: { $regex: regex } },
+        {
+          // Use $elemMatch to find if any skill matches the search key
+          skills: { $elemMatch: { $regex: regex } },
+        },
+      ];
+    }
+
+    const { data, totalCount } = await projectServices.getManyProject(filter, limit, skip);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Send response with pagination info
+    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
+      projects: data,
+      totalCount,
+      totalPages,
+      currentPage: page,
+    });
+  } else {
+    // Call the service method to get all projects for non-admin users
+    const result = await projectServices.getAllProjects();
+    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
+  }
 });

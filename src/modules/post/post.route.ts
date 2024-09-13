@@ -15,18 +15,28 @@ import {
 import { validateId, validateIds } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import { validateImageRemovePath, validatePost } from './post.validation';
+import { validateImageRemovePath, validatePost, validateSearchQuery } from './post.validation';
 
 // Initialize router
 const router = Router();
 
 /**
- * @route GET /api/v1/post/get-post
- * @description Get multiple post
+ * @route GET /api/v1/post/get-posts
+ * @description Get multiple pos
  * @access Public
  * @param {function} controller - ['getPosts']
  */
-router.get('/get-post', getPosts);
+router.get('/get-posts', getPosts);
+
+/**
+ * @route GET /api/v1/post/get-post/:id
+ * @description Get a post by ID
+ * @param {string} id - The ID of the post to retrieve
+ * @access Public
+ * @param {function} controller - ['getPostById']
+ * @param {function} validation - ['validateId']
+ */
+router.get('/get-post/:id', validateId, getPostById);
 
 /**
  * @description check if user is authorized
@@ -91,20 +101,10 @@ router.delete('/delete-post/:id', isAllowed(['admin']), validateId, deletePost);
  * @description Get multiple post
  * @access Admin
  * @param {function} controller - ['getPosts']
+ * @param {function} validation - ['validateSearchQuery']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.get('/get-post/many', isAllowed(['admin']), getPosts);
-
-/**
- * @route GET /api/v1/post/get-post/:id
- * @description Get a post by ID
- * @param {string} id - The ID of the post to retrieve
- * @access Public
- * @param {function} controller - ['getPostById']
- * @param {function} validation - ['validateId']
- */
-router.get('/get-post/:id', isAllowed(['admin']), validateId, getPostById);
+router.get('/get-post/many', isAllowed(['admin']), validateSearchQuery, getPosts);
 
 // Export the router
-
 module.exports = router;

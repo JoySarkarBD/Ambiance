@@ -34,16 +34,6 @@ const deletePost = async (id: string) => {
 };
 
 /**
- * Service function to delete multiple post.
- *
- * @param ids - An array of IDs of post to delete.
- * @returns {Promise<Post[]>} - The deleted post.
- */
-const deleteManyPost = async (ids: string[]) => {
-  return await PostModel.deleteMany({ _id: { $in: ids } });
-};
-
-/**
  * Service function to retrieve a single post by ID.
  *
  * @param id - The ID of the post to retrieve.
@@ -85,9 +75,7 @@ export const postServices = {
   createPost,
   updatePost,
   deletePost,
-  deleteManyPost,
   getPostById,
   getManyPost,
   getAllPosts,
 };
-

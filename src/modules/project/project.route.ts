@@ -6,19 +6,41 @@ import {
   createProject,
   deleteManyProject,
   deleteProject,
-  getManyProject,
   getProjectById,
+  getProjects,
   updateProject,
 } from './project.controller';
 
 //Import validation from corresponding module
 import { validateId, validateIds } from '../../handlers/common-zod-validator';
-import { validateProject } from './project.validation';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
+import {
+  validateImageRemovePath,
+  validateProject,
+  validateSearchQuery,
+} from './project.validation';
 
 // Initialize router
 const router = Router();
+
+/**
+ * @route GET /api/v1/project/get-projects
+ * @description Get multiple post
+ * @access Public
+ * @param {function} controller - ['getProject']
+ */
+router.get('/get-projects', getProjects);
+
+/**
+ * @route GET /api/v1/project/get-project/:id
+ * @description Get a project by ID
+ * @param {string} id - The ID of the project to retrieve
+ * @access Public
+ * @param {function} controller - ['getProjectById']
+ * @param {function} validation - ['validateId']
+ */
+router.get('/get-project/:id', validateId, getProjectById);
 
 /**
  * @description check if user is authorized
@@ -35,8 +57,9 @@ router.use(isAuthorized);
  * @access Admin
  * @param {function} controller - ['createProject']
  * @param {function} validation - ['validateProject']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.post('/create-project', validateProject, createProject);
+router.post('/create-project', isAllowed(['admin']), validateProject, createProject);
 
 /**
  * @route PUT /api/v1/project/update-project/:id
@@ -45,8 +68,16 @@ router.post('/create-project', validateProject, createProject);
  * @access Admin
  * @param {function} controller - ['updateProject']
  * @param {function} validation - ['validateId', 'validateProject']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.put('/update-project/:id', validateId, validateProject, updateProject);
+router.put(
+  '/update-project/:id',
+  isAllowed(['admin']),
+  validateId,
+  validateProject,
+  validateImageRemovePath,
+  updateProject
+);
 
 /**
  * @route DELETE /api/v1/project/delete-project/many
@@ -54,8 +85,9 @@ router.put('/update-project/:id', validateId, validateProject, updateProject);
  * @access Admin
  * @param {function} controller - ['deleteManyProject']
  * @param {function} validation - ['validateIds']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.delete('/delete-project/many', validateIds, deleteManyProject);
+router.delete('/delete-project/many', isAllowed(['admin']), validateIds, deleteManyProject);
 
 /**
  * @route DELETE /api/v1/project/delete-project/:id
@@ -64,29 +96,19 @@ router.delete('/delete-project/many', validateIds, deleteManyProject);
  * @access Admin
  * @param {function} controller - ['deleteProject']
  * @param {function} validation - ['validateId']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.delete('/delete-project/:id', validateId, deleteProject);
+router.delete('/delete-project/:id', isAllowed(['admin']), validateId, deleteProject);
 
 /**
  * @route GET /api/v1/project/get-project/many
  * @description Get multiple project
  * @access Admin
- * @param {function} controller - ['getManyProject']
- * @param {function} validation - ['validateIds']
+ * @param {function} controller - ['getProject']
+ * @param {function} validation - ['validateSearchQuery']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-
-router.get('/get-project/many', isAllowed(['admin']), getManyProject);
-
-/**
- * @route GET /api/v1/project/get-project/:id
- * @description Get a project by ID
- * @param {string} id - The ID of the project to retrieve
- * @access Admin
- * @param {function} controller - ['getProjectById']
- * @param {function} validation - ['validateId']
- */
-router.get('/get-project/:id', validateId, getProjectById);
+router.get('/get-project/many', isAllowed(['admin']), validateSearchQuery, getProjects);
 
 // Export the router
-
 module.exports = router;

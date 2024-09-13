@@ -74,17 +74,35 @@ const deleteManyProject = async (ids: string[]) => {
  * @returns {Promise<Project>} - The retrieved project.
  */
 const getProjectById = async (id: string) => {
-  return await ProjectModel.findById(id);
+  return await ProjectModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**
  * Service function to retrieve multiple project based on query parameters.
  *
- * @param query - The query parameters for filtering project.
- * @returns {Promise<Project[]>} - The retrieved project.
+ * @param filter - The filter criteria for projects.
+ * @param limit - Number of projects per page.
+ * @param skip - Number of projects to skip for pagination.
+ * @returns {Promise<{ data: project[], totalCount: number }>} - The retrieved projects and total count.
  */
-const getManyProject = async (query: object) => {
-  return await ProjectModel.find(query);
+const getManyProject = async (filter: object, limit: number, skip: number) => {
+  // Retrieve projects with filter, pagination, and count
+  const data = await ProjectModel.find(filter).limit(limit).skip(skip).exec();
+  const totalCount = await ProjectModel.countDocuments(filter);
+
+  return { data, totalCount };
+};
+
+/**
+ * Service function to retrieve all projects for non-admin users.
+ *
+ * @returns {Promise<project[]>} - The retrieved projects.
+ */
+const getAllProjects = async () => {
+  return await ProjectModel.find();
 };
 
 export const projectServices = {
@@ -96,4 +114,5 @@ export const projectServices = {
   deleteManyProject,
   getProjectById,
   getManyProject,
+  getAllProjects,
 };

@@ -209,8 +209,6 @@ export const deleteManyPost = catchAsync(async (req: Request, res: Response) => 
   // Expecting an object with an `ids` property
   const { ids }: { ids: string[] } = req.body;
 
-  console.log(ids);
-
   if (!Array.isArray(ids) || ids.length === 0) {
     return ServerResponse(res, false, 400, 'No post IDs provided');
   }

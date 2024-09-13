@@ -10,7 +10,6 @@ const zodPostSchema = z
     title: z.string().min(1, 'Title is required').trim(),
     subtitle: z.string().optional(),
     description: z.string().min(1, 'Description is required').trim(),
-    created_by: z.string().min(1, 'Creator is required'),
     imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
     searchKey: z.string(),
     showPerPage: z
@@ -39,7 +38,6 @@ export const validatePost = (req: Request, res: Response, next: NextFunction) =>
   // Validate request body, excluding imagesToRemove
   const { error, success } = zodPostSchema
     .omit({
-      created_by: true,
       imagesToRemove: true,
       searchKey: true,
       showPerPage: true,
