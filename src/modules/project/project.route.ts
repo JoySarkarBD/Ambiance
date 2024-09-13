@@ -3,22 +3,30 @@ import { Router } from 'express';
 
 // Import controller from corresponding module
 import {
-  createManyProject,
   createProject,
   deleteManyProject,
   deleteProject,
   getManyProject,
   getProjectById,
-  updateManyProject,
   updateProject,
 } from './project.controller';
 
 //Import validation from corresponding module
 import { validateId, validateIds } from '../../handlers/common-zod-validator';
 import { validateProject } from './project.validation';
+import isAllowed from '../../middlewares/auth/is-allowed';
+import isAuthorized from '../../middlewares/auth/is-authorized';
 
 // Initialize router
 const router = Router();
+
+/**
+ * @description check if user is authorized
+ * @param {function} middleware - ['isAuthorized']
+ * @returns {object} - router
+ * @method USE
+ */
+router.use(isAuthorized);
 
 // Define route handlers
 /**
@@ -29,23 +37,6 @@ const router = Router();
  * @param {function} validation - ['validateProject']
  */
 router.post('/create-project', validateProject, createProject);
-
-/**
- * @route POST /api/v1/project/create-project/many
- * @description Create multiple project
- * @access Admin
- * @param {function} controller - ['createManyProject']
- */
-router.post('/create-project/many', createManyProject);
-
-/**
- * @route PUT /api/v1/project/update-project/many
- * @description Update multiple project information
- * @access Admin
- * @param {function} controller - ['updateManyProject']
- * @param {function} validation - ['validateIds']
- */
-router.put('/update-project/many', validateIds, updateManyProject);
 
 /**
  * @route PUT /api/v1/project/update-project/:id
@@ -83,7 +74,8 @@ router.delete('/delete-project/:id', validateId, deleteProject);
  * @param {function} controller - ['getManyProject']
  * @param {function} validation - ['validateIds']
  */
-router.get('/get-project/many', validateIds, getManyProject);
+
+router.get('/get-project/many', isAllowed(['admin']), getManyProject);
 
 /**
  * @route GET /api/v1/project/get-project/:id
@@ -98,4 +90,3 @@ router.get('/get-project/:id', validateId, getProjectById);
 // Export the router
 
 module.exports = router;
-

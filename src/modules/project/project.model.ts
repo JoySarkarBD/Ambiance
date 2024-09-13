@@ -6,6 +6,7 @@ interface IProject extends Document {
   url?: string;
   subject: string;
   skills: string[];
+  images: string[];
   description: string;
   created_by: mongoose.Schema.Types.ObjectId;
 }
@@ -21,7 +22,8 @@ const ProjectSchema: Schema<IProject> = new Schema(
     url: {
       type: String,
       trim: true,
-      default: '#',
+      default: '',
+      
     },
     subject: {
       type: String,
@@ -36,6 +38,10 @@ const ProjectSchema: Schema<IProject> = new Schema(
       type: String,
       required: true,
       trim: true,
+    },
+    images: {
+      type: [String],
+      default: [],
     },
     created_by: {
       type: mongoose.Schema.Types.ObjectId,
