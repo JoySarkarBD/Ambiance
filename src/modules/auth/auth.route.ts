@@ -2,27 +2,24 @@ import { Router } from 'express';
 
 // Import controllers from corresponding module
 import {
-  activateUserStatus,
+  forgetPasswordAuth,
   // forgetPasswordAuth,
   loginAuth,
   registerAdmin,
-  registerUser,
   resetPasswordAuth,
-  updateStatusAuth,
+  updatePassword,
 } from './auth.controller';
 
 // Import validators from corresponding module
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
 import {
-  validateActivationToken,
+  validateEmail,
   validateLogin,
   validateRegister,
   validateResetPassword,
+  validateUpdatePassword,
 } from './auth.validation';
-
-// Import ID validation
-import { validateId } from '../../handlers/common-zod-validator';
 
 // Initialize router
 const router = Router();
@@ -37,15 +34,6 @@ const router = Router();
 router.post('/login', validateLogin, loginAuth);
 
 /**
- * @route POST /api/v1/auth/register-user
- * @description User registration
- * @access Public
- * @param {function} controller - ['registerUser']
- * @param {function} validation - ['validateRegister']
- */
-router.post('/register-user', validateRegister, registerUser);
-
-/**
  * @route POST /api/v1/auth/register-admin
  * @description Admin registration
  * @access Public
@@ -55,22 +43,13 @@ router.post('/register-user', validateRegister, registerUser);
 router.post('/register-admin', validateRegister, registerAdmin);
 
 /**
- * @route POST /api/v1/auth/activate-status
- * @description Activate user status using an activation token
- * @access Public
- * @param {function} controller - ['activateUserStatus']
- * @param {function} validation - ['validateActivationToken']
- */
-router.post('/activate-status', validateActivationToken, activateUserStatus);
-
-/**
  * @route POST /api/v1/auth/forget-password
  * @description Handle forget password requests
  * @access Public
  * @param {function} controller - ['forgetPasswordAuth']
- * @param {function} validation - ['validateForgetPassword']
+ * @param {function} validation - ['validateEmail']
  */
-// router.post('/forget-password', validateForgetPassword, forgetPasswordAuth);
+router.post('/forget-password', validateEmail, forgetPasswordAuth);
 
 /**
  * @route POST /api/v1/auth/reset-password
@@ -82,16 +61,20 @@ router.post('/activate-status', validateActivationToken, activateUserStatus);
 router.post('/reset-password', validateResetPassword, resetPasswordAuth);
 
 /**
- * @route PUT /api/v1/auth/update-status/:id
- * @description Update user status
+ * @route POST /api/v1/auth/update-password
+ * @description Handle update the previous password
  * @access Admin
- * @param {string} id - The ID of the user whose status is being updated
- * @param {function} controller - ['updateStatusAuth']
- * @param {function} validation - ['validateId']
+ * @param {function} controller - ['updatePassword']
+ * @param {function} validation - ['validateUpdatePassword']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.put('/update-status/:id', isAuthorized, isAllowed(['admin']), validateId, updateStatusAuth);
+router.post(
+  '/update-password',
+  isAuthorized,
+  isAllowed(['admin']),
+  validateUpdatePassword,
+  updatePassword
+);
 
 // Export the router
 module.exports = router;
-

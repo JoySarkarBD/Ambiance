@@ -8,9 +8,11 @@ interface IUser extends Document {
   email: string;
   password: string;
   avatar?: string;
-  status?: string;
+  status?: 'active' | 'inactive';
   role: 'admin' | 'user';
   activationToken?: string;
+  resetPasswordToken?: string;
+  resetPasswordTokenExpires?: Date;
 }
 
 // Define the User schema
@@ -51,6 +53,14 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       default: '',
     },
+    resetPasswordToken: {
+      type: String,
+      default: '',
+    },
+    resetPasswordTokenExpires: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
@@ -63,4 +73,3 @@ const User = mongoose.model<IUser>('User', UserSchema);
 
 // Export the User model
 export default User;
-

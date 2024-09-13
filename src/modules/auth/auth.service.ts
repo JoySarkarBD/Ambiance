@@ -56,64 +56,6 @@ const login = async (res: Response, data: { email: string; password: string }) =
 };
 
 /**
- * Service function to register a new user.
- *
- * @param data - The registration data including first name, last name, email, and password.
- * @returns {Promise<User>} - The created user with an activation token sent via email.
- */
-const registerUser = async (data: {
-  first_name: string;
-  last_name: string;
-  email: string;
-  password: string;
-}) => {
-  const { first_name, last_name, email, password } = data;
-
-  // Check if the user already exists
-  const existingUser = await User.findOne({ email });
-  if (existingUser) {
-    throw new Error('User with this email already exists.');
-  }
-
-  // Hash the password
-  const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
-
-  // Create a new user
-  const newUser = new User({
-    first_name,
-    last_name,
-    email,
-    password: hashedPassword,
-    role: 'user',
-    status: 'inactive', // User is inactive initially
-  });
-
-  // Save the user to the database
-  await newUser.save();
-
-  const activationToken = uuidv4(); // Generate a unique token
-  const activationLink = `${config.BASE_URL}/api/v1/auth/activate-status?token=${activationToken}`;
-
-  // Save the activation token to the user
-  newUser.activationToken = activationToken;
-  await newUser.save();
-
-  // Send activation email
-  const emailSent = await SendEmail({
-    to: newUser.email,
-    subject: 'Activate Your Status',
-    text: `Please click the following link to activate your status: ${activationLink}`,
-    html: `<p>Please click the following link to activate your status: <a href="${activationLink}">Activate Status</a></p>`,
-  });
-
-  if (!emailSent) {
-    throw new Error('Failed to send activation email');
-  }
-
-  return newUser;
-};
-
-/**
  * Service function to register a new admin.
  *
  * @param data - The registration data including first name, last name, email, and password.
@@ -142,76 +84,89 @@ const registerAdmin = async (data: {
     email,
     password: hashedPassword,
     role: 'admin',
-    status: existingAdmin ? 'inactive' : 'active',
+    status: 'active',
   });
 
   await newAdmin.save();
-
-  if (newAdmin.status !== 'active') {
-    const activationToken = uuidv4();
-    const activationLink = `${config.BASE_URL}:${config.PORT}/api/v1/auth/activate-status?token=${activationToken}`;
-
-    // Save the activation token to the user
-    newAdmin.activationToken = activationToken;
-    await newAdmin.save();
-
-    // Send activation email
-    const emailSent = await SendEmail({
-      to: newAdmin.email,
-      subject: 'Activate Your Status',
-      text: `Please click the following link to activate your status: ${activationLink}`,
-      html: `<p>Please click the following link to activate your status: <a href="${activationLink}">Activate Status</a></p>`,
-    });
-
-    if (!emailSent) {
-      throw new Error('Failed to send activation email');
-    }
-  }
 
   return newAdmin;
 };
 
 /**
- * Service function to activate user status using an activation token.
+ * Service function to handle forget password requests.
  *
- * @param token - The activation token used to activate the user status.
- * @returns {Promise<{ success: boolean }>} - An object indicating whether activation was successful.
+ * @param email - The email address of the user requesting password reset.
+ * @returns {Promise<string>} - A success message or token for password reset.
  */
-const activateUserStatus = async (token: string): Promise<{ success: boolean }> => {
-  // Find the user by activation token
-  const user = await User.findOne({ activationToken: token });
+const forgetPassword = async (email: string) => {
+  // Find the user by email
+  const user = await User.findOne({ email });
+
   if (!user) {
-    return { success: false };
+    throw new Error('User with this email does not exist');
   }
 
-  // Activate the user's status
-  user.status = 'active';
-  user.activationToken = undefined;
+  // Generate a password reset token
+  const resetToken = uuidv4();
+  const resetLink = `${config.BASE_URL}:${config.PORT}/api/v1/auth/reset-password?token=${resetToken}`;
+
+  // Save the reset token to the user
+  user.resetPasswordToken = resetToken;
+  user.resetPasswordTokenExpires = new Date(Date.now() + 3600000); // Token expires in 1 hour
   await user.save();
 
-  // Return success
-  return { success: true };
-};
+  // Send password reset email
+  const emailSent = await SendEmail({
+    to: user.email,
+    subject: 'Password Reset Request',
+    text: `Please click the following link to reset your password: ${resetLink}`,
+    html: `<p>Please click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p>`,
+  });
 
-// /**
-//  * Service function to handle forget password requests.
-//  *
-//  * @param email - The email address of the user requesting password reset.
-//  * @returns {Promise<string>} - A success message or token for password reset.
-//  */
-// const forgetPassword = async (email: string) => {
-//   // Apply the logic here
-// };
+  if (!emailSent) {
+    throw new Error('Failed to send password reset email');
+  }
+
+  return 'Password reset email sent successfully and the reset password token will expire in one hour';
+};
 
 /**
  * Service function to handle password reset.
  *
- * @param req - The request object containing user details and token.
+ * @param token - The password reset token.
+ * @param new_password - The new password to set.
+ * @returns {Promise<User>} - The updated user with the new password.
+ */
+const resetPassword = async (token: string, new_password: string) => {
+  // Find the user by reset token and check if the token is still valid
+  const user = await User.findOne({
+    resetPasswordToken: token,
+    resetPasswordTokenExpires: { $gt: new Date() }, // Check if token has not expired
+  });
+
+  if (!user) {
+    throw new Error('Invalid or expired token');
+  }
+
+  // Hash the new password
+  const hashedNewPassword = await bcrypt.hash(new_password, config.SALT_ROUNDS);
+
+  // Update the user's password and clear the reset token
+  user.password = hashedNewPassword;
+  user.resetPasswordToken = '';
+  user.resetPasswordTokenExpires = undefined;
+  await user.save();
+};
+
+/**
+ * Service function to handle password update.
+ *
+ * @param req - The request object containing user details.
  * @param previous_password - The current password of the user.
  * @param new_password - The new password to set.
  * @returns {Promise<User>} - The updated user with the new password.
  */
-const resetPassword = async (req: Request, previous_password: string, new_password: string) => {
+const updatePassword = async (req: Request, previous_password: string, new_password: string) => {
   // Find the user by ID from the request object
   const user = await User.findById(req.user?._id);
   if (!user) {
@@ -234,35 +189,10 @@ const resetPassword = async (req: Request, previous_password: string, new_passwo
   return user;
 };
 
-/**
- * Service function to update user status.
- *
- * @param id - The ID of the user whose status is to be updated.
- * @returns {Promise<User>} - The updated user with the new status.
- */
-const updateStatus = async (id: string) => {
-  // Find the user whose status needs to be updated
-  const userToUpdate = await User.findById(id);
-  if (!userToUpdate) {
-    throw new Error('User not found');
-  }
-
-  // Toggle the user's status
-  userToUpdate.status = userToUpdate.status === 'active' ? 'inactive' : 'active';
-
-  // Save the updated user
-  await userToUpdate.save();
-
-  return userToUpdate;
-};
-
 export const authServices = {
   login,
-  registerUser,
   registerAdmin,
-  activateUserStatus,
-  // forgetPassword,
+  forgetPassword,
   resetPassword,
-  updateStatus,
+  updatePassword,
 };
-

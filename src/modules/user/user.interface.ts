@@ -10,10 +10,10 @@ export interface TUser {
   last_name: string;
   email: string;
   password?: string;
-  avatar: string;
-  status: string;
+  avatar?: string;
+  status?: 'active' | 'inactive';
   role: 'admin' | 'user';
-  createAt: Date;
-  UpdatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 

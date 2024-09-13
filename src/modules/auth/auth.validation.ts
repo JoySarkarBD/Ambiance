@@ -15,7 +15,7 @@ const zodAuthSchema = z
       .string()
       .min(6, { message: 'Previous password must be at least 6 characters long' }),
     new_password: z.string().min(6, { message: 'New password must be at least 6 characters long' }),
-    token: z.string().uuid({ message: 'Invalid activation token format' }),
+    resetPasswordToken: z.string().uuid({ message: 'Invalid rest password token format' }),
   })
   .strict();
 
@@ -66,13 +66,34 @@ export const validateRegister = (req: Request, res: Response, next: NextFunction
 };
 
 /**
- * Middleware function to validate password reset using Zod schema.
+ * Middleware function to validate email using Zod schema.
  * @param {object} req - The request object.
  * @param {object} res - The response object.
  * @param {function} next - The next middleware function.
  * @returns {void}
  */
-export const validateResetPassword = (req: Request, res: Response, next: NextFunction) => {
+export const validateEmail = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodAuthSchema.pick({ email: true }).safeParse(req.body);
+
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
+
+  // If validation passed, proceed to the next middleware function
+  return next();
+};
+
+/**
+ * Middleware function to validate password update using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
+ */
+export const validateUpdatePassword = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
   const { error, success } = zodAuthSchema
     .pick({ previous_password: true, new_password: true })
@@ -89,17 +110,17 @@ export const validateResetPassword = (req: Request, res: Response, next: NextFun
 };
 
 /**
- * Middleware function to validate activation token using Zod schema.
+ * Middleware function to validate the reset password request using a Zod schema.
  * @param {object} req - The request object.
  * @param {object} res - The response object.
  * @param {function} next - The next middleware function.
  * @returns {void}
  */
-export const validateActivationToken = (req: Request, res: Response, next: NextFunction) => {
+export const validateResetPassword = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
   const { error, success } = zodAuthSchema
-    .pick({ token: true })
-    .safeParse({ token: req.query.token as string });
+    .pick({ resetPasswordToken: true, new_password: true })
+    .safeParse({ token: req.query.token as string, new_password: req.body });
 
   // Check if validation was successful
   if (!success) {
@@ -110,4 +131,3 @@ export const validateActivationToken = (req: Request, res: Response, next: NextF
   // If validation passed, proceed to the next middleware function
   return next();
 };
-

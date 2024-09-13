@@ -16,24 +16,6 @@ export const loginAuth = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle user registration.
- *
- * @param {Request} req - The request object containing user registration data.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const registerUser = catchAsync(async (req: Request, res: Response) => {
-  const result = await authServices.registerUser(req.body);
-  ServerResponse(
-    res,
-    true,
-    201,
-    'User registered successfully and an email has sent to your mail to active your account',
-    result
-  );
-});
-
-/**
  * Controller function to handle admin registration.
  *
  * @param {Request} req - The request object containing admin registration data.
@@ -50,64 +32,48 @@ export const registerAdmin = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle user status activation.
+ * Controller function to handle forget password requests.
  *
- * @param {Request} req - The request object containing the activation token in params.
+ * @param {Request} req - The request object containing the email address.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const activateUserStatus = catchAsync(async (req: Request, res: Response) => {
-  const token = req.query.token as string;
-
-  // Call the service to activate the user status
-  const result = await authServices.activateUserStatus(token);
-
-  if (result.success) {
-    ServerResponse(res, true, 200, 'User status activated successfully');
-  } else {
-    ServerResponse(res, false, 400, 'Status activation failed, try again');
-  }
+export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
+  const result = await authServices.forgetPassword(req.body.email);
+  ServerResponse(res, true, 200, result);
 });
 
-// /**
-//  * Controller function to handle forget password requests.
-//  *
-//  * @param {Request} req - The request object containing the email address.
-//  * @param {Response} res - The response object used to send the response.
-//  * @returns {void}
-//  */
-// export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
-//   const result = await authServices.forgetPassword(req.body.email);
-//   ServerResponse(res, true, 200, 'Password reset link sent successfully', result);
-// });
+/**
+ * Controller function to handle resetting password using the reset token.
+ *
+ * @param {Request} req - The request object containing the reset token and new password.
+ * @param {Response} res - The response object used to send the response.
+ * @returns {void}
+ */
+export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
+  const { token, new_password } = req.body;
+
+  if (!token || !new_password) {
+    return ServerResponse(res, false, 400, 'Token and new password are required');
+  }
+
+  // Call the service to reset the user's password using the token
+  await authServices.resetPassword(token, new_password);
+
+  ServerResponse(res, true, 200, 'Password reset successfully');
+});
 
 /**
- * Controller function to handle password reset requests.
+ * Controller function to handle password update requests.
  *
  * @param {Request} req - The request object containing previous and new passwords.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
+export const updatePassword = catchAsync(async (req: Request, res: Response) => {
   const { previous_password, new_password } = req.body;
 
-  // Call the service to reset the user old password
-  await authServices.resetPassword(req, previous_password, new_password);
-  ServerResponse(res, true, 200, 'Password reset successfully');
+  // Call the service to update the user old password
+  await authServices.updatePassword(req, previous_password, new_password);
+  ServerResponse(res, true, 200, 'Password update successfully');
 });
-
-/**
- * Controller function to handle user status updates.
- *
- * @param {Request} req - The request object containing the user ID in params.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const updateStatusAuth = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
-
-  // Call the service to update the user status
-  await authServices.updateStatus(id);
-  ServerResponse(res, true, 200, 'Status updated successfully');
-});
-
