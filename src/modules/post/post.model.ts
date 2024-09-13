@@ -1,13 +1,13 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Post document
-interface IPost extends Document {
+export interface IPost extends Document {
   title: string;
-  images?: string[];
+  images: string[];
   banner: string;
-  subtitle?: string | null;
+  subtitle?: string | '';
   description: string;
-  created_by: mongoose.Schema.Types.ObjectId;
+  created_by: mongoose.Types.ObjectId;
 }
 
 // Define the Post schema
@@ -30,7 +30,7 @@ const PostSchema: Schema<IPost> = new Schema(
     subtitle: {
       type: String,
       trim: true,
-      default: null,
+      default: '',
     },
     description: {
       type: String,

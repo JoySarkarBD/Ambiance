@@ -8,9 +8,9 @@ export interface TPost {
   title: string;
   images: string[];
   banner: string;
-  subtitle: string | null;
+  subtitle: string | '';
   description: string;
-  created_by: object;
+  created_by: string;
   createdAt?: Date;
   updatedAt?: Date;
 }

@@ -1,5 +1,6 @@
 import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
+import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../../config/config';
 import SendEmail from '../../utils/email/send-email';
@@ -34,12 +35,15 @@ const login = async (res: Response, data: { email: string; password: string }) =
   // Set token in response header
   res.set('authorization', `Bearer ${token}`);
 
+  // Convert JWT expiration time to milliseconds using ms()
+  const maxAgeInMs = ms(config.JWT_EXPIRATION_TIME);
+
   // Set token in response cookie
   res.cookie('token', token, {
     httpOnly: true,
     secure: config.NODE_ENV === 'production',
     sameSite: 'none',
-    maxAge: config.JWT_EXPIRATION_TIME,
+    maxAge: maxAgeInMs,
   });
 
   // Return user data and token

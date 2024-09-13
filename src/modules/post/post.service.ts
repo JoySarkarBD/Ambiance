@@ -1,25 +1,15 @@
 // Import the model
-import PostModel from './post.model';
+import PostModel, { IPost } from './post.model';
 
 /**
  * Service function to create a new post.
  *
  * @param data - The data to create a new post.
- * @returns {Promise<Post>} - The created post.
+ * @returns {Promise<IPost>} - The created post.
  */
-const createPost = async (data: object) => {
+export const createPost = async (data: Partial<IPost>): Promise<IPost> => {
   const newPost = new PostModel(data);
   return await newPost.save();
-};
-
-/**
- * Service function to create multiple post.
- *
- * @param data - An array of data to create multiple post.
- * @returns {Promise<Post[]>} - The created post.
- */
-const createManyPost = async (data: object[]) => {
-  return await PostModel.insertMany(data);
 };
 
 /**
@@ -31,19 +21,6 @@ const createManyPost = async (data: object[]) => {
  */
 const updatePost = async (id: string, data: object) => {
   return await PostModel.findByIdAndUpdate(id, data, { new: true });
-};
-
-/**
- * Service function to update multiple post.
- *
- * @param data - An array of data to update multiple post.
- * @returns {Promise<Post[]>} - The updated post.
- */
-const updateManyPost = async (data: { id: string, updates: object }[]) => {
-  const updatePromises = data.map(({ id, updates }) =>
-    PostModel.findByIdAndUpdate(id, updates, { new: true })
-  );
-  return await Promise.all(updatePromises);
 };
 
 /**
@@ -73,26 +50,44 @@ const deleteManyPost = async (ids: string[]) => {
  * @returns {Promise<Post>} - The retrieved post.
  */
 const getPostById = async (id: string) => {
-  return await PostModel.findById(id);
+  return await PostModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**
- * Service function to retrieve multiple post based on query parameters.
+ * Service function to retrieve multiple posts based on query parameters for admins.
  *
- * @param query - The query parameters for filtering post.
- * @returns {Promise<Post[]>} - The retrieved post.
+ * @param filter - The filter criteria for posts.
+ * @param limit - Number of posts per page.
+ * @param skip - Number of posts to skip for pagination.
+ * @returns {Promise<{ data: Post[], totalCount: number }>} - The retrieved posts and total count.
  */
-const getManyPost = async (query: object) => {
-  return await PostModel.find(query);
+const getManyPost = async (filter: object, limit: number, skip: number) => {
+  // Retrieve posts with filter, pagination, and count
+  const data = await PostModel.find(filter).limit(limit).skip(skip).exec();
+  const totalCount = await PostModel.countDocuments(filter);
+
+  return { data, totalCount };
+};
+
+/**
+ * Service function to retrieve all posts for non-admin users.
+ *
+ * @returns {Promise<Post[]>} - The retrieved posts.
+ */
+const getAllPosts = async () => {
+  return await PostModel.find();
 };
 
 export const postServices = {
   createPost,
-  createManyPost,
   updatePost,
-  updateManyPost,
   deletePost,
   deleteManyPost,
   getPostById,
   getManyPost,
+  getAllPosts,
 };
+
