@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
 import { faqServices } from './faq.service';
@@ -12,7 +13,7 @@ import { faqServices } from './faq.service';
  */
 export const createFaq = catchAsync(async (req: Request, res: Response) => {
   // Ensure the user is properly attached to the request and set `created_by`
-  req.body.created_by = req.user?._id;
+  req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
 
   // Call the service method to create a new FAQ and get the result
   const result = await faqServices.createFaq(req.body);

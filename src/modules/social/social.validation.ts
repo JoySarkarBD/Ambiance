@@ -3,27 +3,25 @@ import { z } from 'zod';
 import zodErrorHandler from '../../handlers/zod-error-handler';
 
 /**
- * Zod schema for validating faq data.
+ * Zod schema for validating social data.
  */
-const zodFaqSchema = z
+const zodSocialSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    description: z.string().min(1, 'description is required').trim(),
+    name: z.string().min(1, 'Name is required').trim(),
+    url: z.string().url('Invalid URL format').min(1, 'URL is required').trim(),
   })
   .strict();
 
 /**
- * Middleware function to validate faq using Zod schema.
+ * Middleware function to validate social using Zod schema.
  * @param {object} req - The request object.
  * @param {object} res - The response object.
  * @param {function} next - The next middleware function.
  * @returns {void}
  */
-export const validateFaq = (req: Request, res: Response, next: NextFunction) => {
+export const validateSocial = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
-  const { error, success } = zodFaqSchema
-    .pick({ title: true, description: true })
-    .safeParse(req.body);
+  const { error, success } = zodSocialSchema.pick({ name: true, url: true }).safeParse(req.body);
 
   // Check if validation was successful
   if (!success) {
@@ -34,3 +32,4 @@ export const validateFaq = (req: Request, res: Response, next: NextFunction) => 
   // If validation passed, proceed to the next middleware function
   return next();
 };
+

@@ -54,7 +54,7 @@ const getFaqById = async (id: string) => {
 };
 
 /**
- * Service function to retrieve multiple faq based on query parameters.
+ * Service function to retrieve all faq.
  *
  * @returns {Promise<Faq[]>} - The retrieved faq.
  */
