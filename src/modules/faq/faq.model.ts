@@ -5,6 +5,7 @@ interface IFaq extends Document {
   _id: string;
   title: string;
   description: string;
+  created_by: mongoose.Types.ObjectId;
 }
 
 // Define the Faq schema
@@ -17,6 +18,11 @@ const FaqSchema: Schema<IFaq> = new Schema(
     description: {
       type: String,
       required: true,
+    },
+    created_by: {
+      type: mongoose.Schema.Types.ObjectId,
+      required: true,
+      ref: 'User',
     },
   },
   {
@@ -31,4 +37,3 @@ const Faq = mongoose.model<IFaq>('Faq', FaqSchema);
 // Export the Faq model
 
 export default Faq;
-

@@ -8,7 +8,7 @@ export interface TFaq {
   _id?: string;
   title: string;
   description: string;
+  created_by: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
-
