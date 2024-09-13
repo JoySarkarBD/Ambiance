@@ -6,7 +6,7 @@ import {
   createService,
   deleteManyService,
   deleteService,
-  getAllServices,
+  getAllService,
   getServiceById,
   updateService,
 } from './service.controller';
@@ -28,9 +28,9 @@ const router = Router();
  * @route GET /api/v1/service/get-all-service
  * @description Get multiple service
  * @access Public
- * @param {function} controller - ['getAllServices']
+ * @param {function} controller - ['getAllService']
  */
-router.get('/get-all-service', getAllServices);
+router.get('/get-all-service', getAllService);
 
 /**
  * @route GET /api/v1/service/get-service/:id
@@ -104,11 +104,11 @@ router.delete('/delete-service/:id', isAllowed(['admin']), validateId, deleteSer
  * @route GET /api/v1/service/get-service/many
  * @description Get multiple service
  * @access Admin
- * @param {function} controller - ['getAllServices']
+ * @param {function} controller - ['getAllService']
  * @param {function} validation - ['validateSearchQuery']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.get('/get-service/many', isAllowed(['admin']), validateSearchQuery, getAllServices);
+router.get('/get-service/many', isAllowed(['admin']), validateSearchQuery, getAllService);
 
 // Export the router
 module.exports = router;

@@ -1,14 +1,14 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Project document
-interface IProject extends Document {
+export interface IProject extends Document {
   title: string;
   url?: string;
   subject: string;
   skills: string[];
   images: string[];
   description: string;
-  created_by: mongoose.Schema.Types.ObjectId;
+  created_by: mongoose.Types.ObjectId;
 }
 
 // Define the Project schema
@@ -23,7 +23,6 @@ const ProjectSchema: Schema<IProject> = new Schema(
       type: String,
       trim: true,
       default: '',
-      
     },
     subject: {
       type: String,
@@ -60,4 +59,3 @@ const Project = mongoose.model<IProject>('Project', ProjectSchema);
 
 // Export the Project model
 export default Project;
-

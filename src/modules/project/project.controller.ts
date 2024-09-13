@@ -232,7 +232,7 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const getProjects = catchAsync(async (req: Request, res: Response) => {
+export const getProject = catchAsync(async (req: Request, res: Response) => {
   const { user } = req; // Assume req.user is set by authentication middleware
   const { searchKey, showPerPage, pageNo } = req.query;
 
@@ -270,7 +270,7 @@ export const getProjects = catchAsync(async (req: Request, res: Response) => {
     });
   } else {
     // Call the service method to get all projects for non-admin users
-    const result = await projectServices.getAllProjects();
+    const result = await projectServices.getAllProject();
     return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
   }
 });

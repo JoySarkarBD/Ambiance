@@ -260,7 +260,7 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const getPosts = catchAsync(async (req: Request, res: Response) => {
+export const getAllPost = catchAsync(async (req: Request, res: Response) => {
   const { user } = req; // Assume req.user is set by authentication middleware
   const { searchKey, showPerPage, pageNo } = req.query;
 
@@ -289,7 +289,7 @@ export const getPosts = catchAsync(async (req: Request, res: Response) => {
     });
   } else {
     // Call the service method to get all posts for non-admin users
-    const result = await postServices.getAllPosts();
+    const result = await postServices.getAllPost();
     return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
   }
 });

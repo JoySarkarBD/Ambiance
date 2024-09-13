@@ -6,7 +6,7 @@ import {
   createOption,
   deleteManyOption,
   deleteOption,
-  getOption,
+  getAllOption,
   getOptionByName,
   updateOption,
 } from './option.controller';
@@ -24,10 +24,10 @@ const router = Router();
  * @route GET /api/v1/option/get-all-option
  * @description Get multiple option
  * @access Public
- * @param {function} controller - ['getManyOption']
+ * @param {function} controller - ['getAllOption']
  * @param {function} validation - ['validateIds']
  */
-router.get('/get-all-option', getOption);
+router.get('/get-all-option', getAllOption);
 
 /**
  * @route GET /api/v1/option/get-option/:name
@@ -93,4 +93,3 @@ router.delete('/delete-option/:id', isAllowed(['admin']), validateId, deleteOpti
 // Export the router
 
 module.exports = router;
-

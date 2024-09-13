@@ -6,8 +6,8 @@ import {
   createProject,
   deleteManyProject,
   deleteProject,
+  getProject,
   getProjectById,
-  getProjects,
   updateProject,
 } from './project.controller';
 
@@ -30,7 +30,7 @@ const router = Router();
  * @access Public
  * @param {function} controller - ['getProject']
  */
-router.get('/get-all-project', getProjects);
+router.get('/get-all-project', getProject);
 
 /**
  * @route GET /api/v1/project/get-project/:id
@@ -108,7 +108,7 @@ router.delete('/delete-project/:id', isAllowed(['admin']), validateId, deletePro
  * @param {function} validation - ['validateSearchQuery']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.get('/get-project/many', isAllowed(['admin']), validateSearchQuery, getProjects);
+router.get('/get-project/many', isAllowed(['admin']), validateSearchQuery, getProject);
 
 // Export the router
 module.exports = router;

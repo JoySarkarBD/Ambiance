@@ -6,8 +6,8 @@ import {
   createPost,
   deleteManyPost,
   deletePost,
+  getAllPost,
   getPostById,
-  getPosts,
   updatePost,
 } from './post.controller';
 
@@ -24,9 +24,9 @@ const router = Router();
  * @route GET /api/v1/post/get-all-post
  * @description Get multiple post
  * @access Public
- * @param {function} controller - ['getPosts']
+ * @param {function} controller - ['getAllPost']
  */
-router.get('/get-all-post', getPosts);
+router.get('/get-all-post', getAllPost);
 
 /**
  * @route GET /api/v1/post/get-post/:id
@@ -100,11 +100,11 @@ router.delete('/delete-post/:id', isAllowed(['admin']), validateId, deletePost);
  * @route GET /api/v1/post/get-post/many
  * @description Get multiple post
  * @access Admin
- * @param {function} controller - ['getPosts']
+ * @param {function} controller - ['getAllPost']
  * @param {function} validation - ['validateSearchQuery']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.get('/get-post/many', isAllowed(['admin']), validateSearchQuery, getPosts);
+router.get('/get-post/many', isAllowed(['admin']), validateSearchQuery, getAllPost);
 
 // Export the router
 module.exports = router;

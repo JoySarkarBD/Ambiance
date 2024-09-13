@@ -1,13 +1,13 @@
 // Import the model
-import ProjectModel from './project.model';
+import ProjectModel, { IProject } from './project.model';
 
 /**
  * Service function to create a new project.
  *
  * @param data - The data to create a new project.
- * @returns {Promise<Project>} - The created project.
+ * @returns {Promise<IProject>} - The created project.
  */
-const createProject = async (data: object) => {
+const createProject = async (data: Partial<IProject>): Promise<IProject> => {
   console.log(data);
   const newProject = new ProjectModel(data);
   return await newProject.save();
@@ -101,7 +101,7 @@ const getManyProject = async (filter: object, limit: number, skip: number) => {
  *
  * @returns {Promise<project[]>} - The retrieved projects.
  */
-const getAllProjects = async () => {
+const getAllProject = async () => {
   return await ProjectModel.find();
 };
 
@@ -114,5 +114,5 @@ export const projectServices = {
   deleteManyProject,
   getProjectById,
   getManyProject,
-  getAllProjects,
+  getAllProject,
 };

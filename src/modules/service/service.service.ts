@@ -100,7 +100,7 @@ const getManyService = async (filter: object, limit: number, skip: number) => {
  *
  * @returns {Promise<Service[]>} - The retrieved services.
  */
-const getAllServices = async () => {
+const getAllService = async () => {
   return await ServiceModel.find();
 };
 
@@ -113,6 +113,6 @@ export const serviceServices = {
   deleteManyService,
   getServiceById,
   getManyService,
-  getAllServices,
+  getAllService,
 };
 

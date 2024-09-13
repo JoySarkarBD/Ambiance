@@ -88,10 +88,9 @@ export const getOptionByName = catchAsync(async (req: Request, res: Response) =>
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const getOption = catchAsync(async (req: Request, res: Response) => {
+export const getAllOption = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to get multiple option based on query parameters and get the result
   const result = await optionServices.getAllOption();
   // Send a success response with the retrieved resources data
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });
-

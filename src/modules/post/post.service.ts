@@ -67,7 +67,7 @@ const getManyPost = async (filter: object, limit: number, skip: number) => {
  *
  * @returns {Promise<Post[]>} - The retrieved posts.
  */
-const getAllPosts = async () => {
+const getAllPost = async () => {
   return await PostModel.find();
 };
 
@@ -77,5 +77,5 @@ export const postServices = {
   deletePost,
   getPostById,
   getManyPost,
-  getAllPosts,
+  getAllPost,
 };
