@@ -7,6 +7,7 @@ import { v4 as uuidv4 } from 'uuid';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
 import { UploadedFile } from 'express-fileupload';
+import Project from './project.model';
 
 const MODEL_NAME = 'project';
 
@@ -32,6 +33,49 @@ async function saveImages(images: UploadedFile | UploadedFile[] | undefined): Pr
   const imageFiles = Array.isArray(images) ? images : [images];
   const imagePaths = await Promise.all(imageFiles.map((img) => saveFile(img, 'images')));
   return imagePaths;
+}
+
+// Helper function to delete a file
+async function deleteFile(filePath: string): Promise<void> {
+  const absolutePath = path.join(__dirname, '../../../public', filePath);
+  try {
+    await fs.unlink(absolutePath);
+  } catch (error) {
+    console.error(`Failed to delete file: ${absolutePath}`, error);
+  }
+}
+
+// Helper function to handle image update
+async function handleImageUpdate(
+  post: any, // The existing post
+  newImages: UploadedFile | UploadedFile[] | undefined,
+  imagesToRemove: string[] | undefined
+): Promise<string[]> {
+  // Start with the existing images
+  let updatedImages = [...post.images];
+
+  // Remove specified images from the filesystem and the list
+  if (imagesToRemove) {
+    for (const imageToRemove of imagesToRemove) {
+      // Check if the image exists in the post
+      const index = updatedImages.indexOf(imageToRemove);
+      if (index > -1) {
+        // Remove from list
+        updatedImages.splice(index, 1);
+        // Delete from filesystem
+        await deleteFile(imageToRemove);
+      }
+    }
+  }
+
+  // If there are new images, save them and update the list
+  if (newImages) {
+    const imageFiles = Array.isArray(newImages) ? newImages : [newImages];
+    const newImagePaths = await Promise.all(imageFiles.map((img) => saveFile(img, 'images')));
+    updatedImages.push(...newImagePaths);
+  }
+
+  return updatedImages;
 }
 
 /**
@@ -76,13 +120,31 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateProject = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  const project = await Project.findById(id);
+  if (!project) {
+    return ServerResponse(res, false, 404, 'Post not found');
+  }
+  const { title, subject, skills, description, url } = req.body;
+  const images = req.files?.images as UploadedFile | UploadedFile[] | undefined;
+  const imagesToRemove = req.body?.imagesToRemove as string[] | undefined;
+
+  //Handle image update
+  const updatedImages = await handleImageUpdate(project, images, imagesToRemove);
+
+  const projectData = {
+    title,
+    subject,
+    skills,
+    description,
+    url,
+    images: updatedImages,
+    created_by: new mongoose.Types.ObjectId(req.user?._id),
+  };
   // Call the service method to update the project by ID and get the result
-  const result = await projectServices.updateProject(id, req.body);
+  const result = await projectServices.updateProject(id, projectData);
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Project updated successfully', result);
 });
-
-
 
 /**
  * Controller function to handle the deletion of a single project.

@@ -13,6 +13,7 @@ const zodProjectSchema = z
     skills: z
       .array(z.string(), { required_error: 'skills is required' })
       .min(1, 'skills must have at least one item'),
+    imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
     description: z.string().min(1, 'Description is required').trim(),
     images: z.string().optional(),
   })
@@ -26,6 +27,11 @@ const zodProjectSchema = z
  * @returns {void}
  */
 export const validateProject = (req: Request, res: Response, next: NextFunction) => {
+  if (typeof req.body.imagesToRemove === 'string') {
+    req.body.imagesToRemove = [req.body.imagesToRemove];
+  } else if (!Array.isArray(req.body.imagesToRemove)) {
+    req.body.imagesToRemove = [];
+  }
   if (typeof req.body.skills === 'string') {
     req.body.skills = [req.body.skills];
   }
