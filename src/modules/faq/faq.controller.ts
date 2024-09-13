@@ -11,10 +11,14 @@ import { faqServices } from './faq.service';
  * @returns {void}
  */
 export const createFaq = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to create a new faq and get the result
+  // Ensure the user is properly attached to the request and set `created_by`
+  req.body.created_by = req.user?._id;
+
+  // Call the service method to create a new FAQ and get the result
   const result = await faqServices.createFaq(req.body);
-  // Send a success response with the created resource data
-  ServerResponse(res, true, 201, 'Faq created successfully', result);
+
+  // Send a success response with the created FAQ data
+  ServerResponse(res, true, 201, 'FAQ created successfully', result);
 });
 
 /**
@@ -89,4 +93,3 @@ export const getAllFaq = catchAsync(async (req: Request, res: Response) => {
   // Send a success response with the retrieved resources data
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });
-
