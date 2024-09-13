@@ -1,13 +1,13 @@
 // Import the model
-import SocialModel from './social.model';
+import SocialModel, { ISocial } from './social.model';
 
 /**
  * Service function to create a new social.
  *
  * @param data - The data to create a new social.
- * @returns {Promise<Social>} - The created social.
+ * @returns {Promise<ISocial>} - The created social.
  */
-const createSocial = async (data: object) => {
+const createSocial = async (data: Promise<ISocial>): Promise<ISocial> => {
   const newSocial = new SocialModel(data);
   return await newSocial.save();
 };
@@ -70,4 +70,3 @@ export const socialServices = {
   getSocialById,
   getAllSocial,
 };
-

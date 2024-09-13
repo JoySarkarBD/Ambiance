@@ -1,13 +1,13 @@
 // Import the model
-import OptionModel from './option.model';
+import OptionModel, { IOption } from './option.model';
 
 /**
  * Service function to create a new option.
  *
  * @param data - The data to create a new option.
- * @returns {Promise<Option>} - The created option.
+ * @returns {Promise<IOption>} - The created option.
  */
-const createOption = async (data: object) => {
+const createOption = async (data: Partial<IOption>): Promise<IOption> => {
   const newOption = new OptionModel(data);
   return await newOption.save();
 };
@@ -70,4 +70,3 @@ export const optionServices = {
   getOptionByName,
   getAllOption,
 };
-

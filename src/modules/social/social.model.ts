@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Social document
-interface ISocial extends Document {
+export interface ISocial extends Document {
   _id: string;
   name: string;
   url: string;

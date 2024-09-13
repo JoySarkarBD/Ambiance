@@ -1,5 +1,5 @@
 // Import the model
-import FaqModel from './faq.model';
+import FaqModel, { IFaq } from './faq.model';
 
 /**
  * Service function to create a new faq.
@@ -7,7 +7,7 @@ import FaqModel from './faq.model';
  * @param data - The data to create a new faq.
  * @returns {Promise<Faq>} - The created faq.
  */
-const createFaq = async (data: object) => {
+const createFaq = async (data: Partial<IFaq>): Promise<IFaq> => {
   const newFaq = new FaqModel(data);
   return await newFaq.save();
 };

@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Option document
-interface IOption extends Document {
+export interface IOption extends Document {
   _id: string;
   name: string;
   value: string;
