@@ -12,7 +12,7 @@ export interface TService {
   thumbnail: string;
   reviews: number;
   rating: number;
-  images?: string[];
+  images: string[];
   created_by: string;
   createdAt?: Date;
   updatedAt?: Date;

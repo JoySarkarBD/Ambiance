@@ -25,12 +25,12 @@ import {
 const router = Router();
 
 /**
- * @route GET /api/v1/project/get-projects
+ * @route GET /api/v1/project/get-all-project
  * @description Get multiple post
  * @access Public
  * @param {function} controller - ['getProject']
  */
-router.get('/get-projects', getProjects);
+router.get('/get-all-project', getProjects);
 
 /**
  * @route GET /api/v1/project/get-project/:id
@@ -67,7 +67,7 @@ router.post('/create-project', isAllowed(['admin']), validateProject, createProj
  * @param {string} id - The ID of the project to update
  * @access Admin
  * @param {function} controller - ['updateProject']
- * @param {function} validation - ['validateId', 'validateProject']
+ * @param {function} validation - ['validateId', 'validateProject', 'validateImageRemovePath']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put(

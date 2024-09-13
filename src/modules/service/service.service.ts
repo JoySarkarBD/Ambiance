@@ -1,13 +1,13 @@
 // Import the model
-import ServiceModel from './service.model';
+import ServiceModel, { IService } from './service.model';
 
 /**
  * Service function to create a new service.
  *
  * @param data - The data to create a new service.
- * @returns {Promise<Service>} - The created service.
+ * @returns {Promise<IService>} - The created service.
  */
-const createService = async (data: object) => {
+const createService = async (data: Partial<IService>): Promise<IService> => {
   const newService = new ServiceModel(data);
   return await newService.save();
 };
@@ -39,7 +39,7 @@ const updateService = async (id: string, data: object) => {
  * @param data - An array of data to update multiple service.
  * @returns {Promise<Service[]>} - The updated service.
  */
-const updateManyService = async (data: { id: string, updates: object }[]) => {
+const updateManyService = async (data: { id: string; updates: object }[]) => {
   const updatePromises = data.map(({ id, updates }) =>
     ServiceModel.findByIdAndUpdate(id, updates, { new: true })
   );
@@ -73,17 +73,35 @@ const deleteManyService = async (ids: string[]) => {
  * @returns {Promise<Service>} - The retrieved service.
  */
 const getServiceById = async (id: string) => {
-  return await ServiceModel.findById(id);
+  return await ServiceModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**
  * Service function to retrieve multiple service based on query parameters.
  *
- * @param query - The query parameters for filtering service.
- * @returns {Promise<Service[]>} - The retrieved service.
+ * @param filter - The filter criteria for posts.
+ * @param limit - Number of posts per page.
+ * @param skip - Number of posts to skip for pagination.
+ * @returns {Promise<{ data: Post[], totalCount: number }>} - The retrieved posts and total count.
  */
-const getManyService = async (query: object) => {
-  return await ServiceModel.find(query);
+const getManyService = async (filter: object, limit: number, skip: number) => {
+  // Retrieve posts with filter, pagination, and count
+  const data = await ServiceModel.find(filter).limit(limit).skip(skip).exec();
+  const totalCount = await ServiceModel.countDocuments(filter);
+
+  return { data, totalCount };
+};
+
+/**
+ * Service function to retrieve all services for non-admin users.
+ *
+ * @returns {Promise<Service[]>} - The retrieved services.
+ */
+const getAllServices = async () => {
+  return await ServiceModel.find();
 };
 
 export const serviceServices = {
@@ -95,4 +113,6 @@ export const serviceServices = {
   deleteManyService,
   getServiceById,
   getManyService,
+  getAllServices,
 };
+

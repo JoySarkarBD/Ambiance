@@ -37,9 +37,9 @@ export const validateMenu = (req: Request, res: Response, next: NextFunction) =>
   // Validate request body
   const { error, success } = zodMenuSchema
     .pick({
-      title: req.body.title,
-      url: req.body.url,
-      target: req.body?.target,
+      title: true,
+      url: true,
+      target: true,
     })
     .safeParse({
       title: req.body.title,

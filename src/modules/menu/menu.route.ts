@@ -21,13 +21,13 @@ import { validateMenu, validateSearchQuery } from './menu.validation';
 const router = Router();
 
 /**
- * @route GET /api/v1/menu/get-menus
+ * @route GET /api/v1/menu/get-all-menu
  * @description Get multiple menu
  * @access Public
  * @param {function} controller - ['getAllMenu']
  * @param {function} validation - ['validateIds']
  */
-router.get('/get-menus', validateIds, getAllMenu);
+router.get('/get-all-menu', validateIds, getAllMenu);
 
 /**
  * @route GET /api/v1/menu/get-menu/:id

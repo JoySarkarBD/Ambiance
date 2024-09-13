@@ -21,12 +21,12 @@ import { validateImageRemovePath, validatePost, validateSearchQuery } from './po
 const router = Router();
 
 /**
- * @route GET /api/v1/post/get-posts
- * @description Get multiple pos
+ * @route GET /api/v1/post/get-all-post
+ * @description Get multiple post
  * @access Public
  * @param {function} controller - ['getPosts']
  */
-router.get('/get-posts', getPosts);
+router.get('/get-all-post', getPosts);
 
 /**
  * @route GET /api/v1/post/get-post/:id
@@ -63,7 +63,7 @@ router.post('/create-post', isAllowed(['admin']), validatePost, createPost);
  * @param {string} id - The ID of the post to update
  * @access Admin
  * @param {function} controller - ['updatePost']
- * @param {function} validation - ['validateId', 'validatePost' , 'validateImageRemovePath']
+ * @param {function} validation - ['validateId', 'validatePost', 'validateImageRemovePath' ]
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put(

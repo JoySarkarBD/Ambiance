@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import mongoose from 'mongoose';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
 import { menuServices } from './menu.service';
@@ -11,6 +12,8 @@ import { menuServices } from './menu.service';
  * @returns {void}
  */
 export const createMenu = catchAsync(async (req: Request, res: Response) => {
+  // Ensure the user is properly attached to the request and set `created_by`
+  req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to create a new menu and get the result
   const result = await menuServices.createMenu(req.body);
   // Send a success response with the created resource data
@@ -26,6 +29,8 @@ export const createMenu = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  // Ensure the user is properly attached to the request and set `created_by`
+  req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to update the menu by ID and get the result
   const result = await menuServices.updateMenu(id, req.body);
   // Send a success response with the updated resource data
