@@ -1,7 +1,38 @@
 import { Request, Response } from 'express';
 import { projectServices } from './project.service';
+import fs from 'fs/promises';
+import mongoose from 'mongoose';
+import path from 'path';
+import { v4 as uuidv4 } from 'uuid';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
+import { UploadedFile } from 'express-fileupload';
+
+const MODEL_NAME = 'project';
+
+// Helper function to save a single file
+async function saveFile(file: UploadedFile, subFolder: string): Promise<string> {
+  const fileName = `${uuidv4()}${path.extname(file.name)}`;
+  const relativePath = path.join('uploads', MODEL_NAME, subFolder);
+  const absolutePath = path.join(__dirname, '../../../public', relativePath);
+
+  // Ensure the directory exists
+  await fs.mkdir(absolutePath, { recursive: true });
+
+  const filePath = path.join(absolutePath, fileName);
+  await file.mv(filePath);
+
+  // Return the path relative to the public folder
+  return `/uploads/${MODEL_NAME}/${subFolder}/${fileName}`;
+}
+
+// Helper function to save multiple images
+async function saveImages(images: UploadedFile | UploadedFile[] | undefined): Promise<string[]> {
+  if (!images) return [];
+  const imageFiles = Array.isArray(images) ? images : [images];
+  const imagePaths = await Promise.all(imageFiles.map((img) => saveFile(img, 'images')));
+  return imagePaths;
+}
 
 /**
  * Controller function to handle the creation of a single Project.
@@ -11,24 +42,29 @@ import catchAsync from '../../utils/catch-async/catch-async';
  * @returns {void}
  */
 export const createProject = catchAsync(async (req: Request, res: Response) => {
+  const images = req.files?.images as UploadedFile | UploadedFile[] | undefined;
+
+  const { title, subject, skills, description, url } = req.body;
+
+  // Save banner
+
+  // Save images
+  const imagePaths = await saveImages(images);
+
+  const projectData = {
+    title,
+    subject,
+    skills,
+    description,
+    url,
+    images: imagePaths,
+    created_by: new mongoose.Types.ObjectId(req.user?._id),
+  };
+
   // Call the service method to create a new project and get the result
-  const result = await projectServices.createProject(req.body);
+  const result = await projectServices.createProject(projectData);
   // Send a success response with the created resource data
   ServerResponse(res, true, 201, 'Project created successfully', result);
-});
-
-/**
- * Controller function to handle the creation of multiple project.
- *
- * @param {Request} req - The request object containing an array of project data in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const createManyProject = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to create multiple projects and get the result
-  const result = await projectServices.createManyProject(req.body);
-  // Send a success response with the created resources data
-  ServerResponse(res, true, 201, 'Resources created successfully', result);
 });
 
 /**
@@ -46,19 +82,7 @@ export const updateProject = catchAsync(async (req: Request, res: Response) => {
   ServerResponse(res, true, 200, 'Project updated successfully', result);
 });
 
-/**
- * Controller function to handle the update operation for multiple project.
- *
- * @param {Request} req - The request object containing an array of project data in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const updateManyProject = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to update multiple project and get the result
-  const result = await projectServices.updateManyProject(req.body);
-  // Send a success response with the updated resources data
-  ServerResponse(res, true, 200, 'Resources updated successfully', result);
-});
+
 
 /**
  * Controller function to handle the deletion of a single project.

@@ -3,13 +3,11 @@ import { Router } from 'express';
 
 // Import controller from corresponding module
 import {
-  createManyProject,
   createProject,
   deleteManyProject,
   deleteProject,
   getManyProject,
   getProjectById,
-  updateManyProject,
   updateProject,
 } from './project.controller';
 
@@ -30,22 +28,6 @@ const router = Router();
  */
 router.post('/create-project', validateProject, createProject);
 
-/**
- * @route POST /api/v1/project/create-project/many
- * @description Create multiple project
- * @access Admin
- * @param {function} controller - ['createManyProject']
- */
-router.post('/create-project/many', createManyProject);
-
-/**
- * @route PUT /api/v1/project/update-project/many
- * @description Update multiple project information
- * @access Admin
- * @param {function} controller - ['updateManyProject']
- * @param {function} validation - ['validateIds']
- */
-router.put('/update-project/many', validateIds, updateManyProject);
 
 /**
  * @route PUT /api/v1/project/update-project/:id

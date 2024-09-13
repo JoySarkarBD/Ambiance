@@ -8,6 +8,7 @@ import ProjectModel from './project.model';
  * @returns {Promise<Project>} - The created project.
  */
 const createProject = async (data: object) => {
+  console.log(data);
   const newProject = new ProjectModel(data);
   return await newProject.save();
 };
@@ -39,7 +40,7 @@ const updateProject = async (id: string, data: object) => {
  * @param data - An array of data to update multiple project.
  * @returns {Promise<Project[]>} - The updated project.
  */
-const updateManyProject = async (data: { id: string, updates: object }[]) => {
+const updateManyProject = async (data: { id: string; updates: object }[]) => {
   const updatePromises = data.map(({ id, updates }) =>
     ProjectModel.findByIdAndUpdate(id, updates, { new: true })
   );

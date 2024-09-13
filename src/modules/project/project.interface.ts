@@ -11,8 +11,8 @@ export interface TProject {
   subject: string;
   skills: string[];
   description: string;
+  images: string[];
   created_by: string;
   createdAt?: Date;
   updatedAt?: Date;
 }
-
