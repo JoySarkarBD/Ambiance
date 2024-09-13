@@ -1,7 +1,7 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Menu document
-interface IMenu extends Document {
+export interface IMenu extends Document {
   title: string;
   url: string;
   target?: string | null;

@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
-import { menuServices } from './menu.service';
 import ServerResponse from '../../helpers/responses/custom-response';
 import catchAsync from '../../utils/catch-async/catch-async';
+import { menuServices } from './menu.service';
 
 /**
  * Controller function to handle the creation of a single Menu.
@@ -18,20 +18,6 @@ export const createMenu = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the creation of multiple menu.
- *
- * @param {Request} req - The request object containing an array of menu data in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const createManyMenu = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to create multiple menus and get the result
-  const result = await menuServices.createManyMenu(req.body);
-  // Send a success response with the created resources data
-  ServerResponse(res, true, 201, 'Resources created successfully', result);
-});
-
-/**
  * Controller function to handle the update operation for a single menu.
  *
  * @param {Request} req - The request object containing the ID of the menu to update in URL parameters and the updated data in the body.
@@ -44,20 +30,6 @@ export const updateMenu = catchAsync(async (req: Request, res: Response) => {
   const result = await menuServices.updateMenu(id, req.body);
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Menu updated successfully', result);
-});
-
-/**
- * Controller function to handle the update operation for multiple menu.
- *
- * @param {Request} req - The request object containing an array of menu data in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const updateManyMenu = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to update multiple menu and get the result
-  const result = await menuServices.updateManyMenu(req.body);
-  // Send a success response with the updated resources data
-  ServerResponse(res, true, 200, 'Resources updated successfully', result);
 });
 
 /**
@@ -111,9 +83,41 @@ export const getMenuById = catchAsync(async (req: Request, res: Response) => {
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
-export const getManyMenu = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get multiple menu based on query parameters and get the result
-  const result = await menuServices.getManyMenu(req.query);
-  // Send a success response with the retrieved resources data
-  ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
+export const getAllMenu = catchAsync(async (req: Request, res: Response) => {
+  const { user } = req; // Assume req.user is set by authentication middleware
+  const { searchKey, showPerPage, pageNo } = req.query;
+
+  const page = parseInt(pageNo as string, 10);
+  const limit = parseInt(showPerPage as string, 10);
+  const skip = (page - 1) * limit;
+
+  if (user?.role === 'admin') {
+    const filter: any = {};
+    if (searchKey) {
+      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
+      filter.$or = [
+        { title: { $regex: regex } },
+        { url: { $regex: regex } },
+        { target: { $regex: regex } },
+      ];
+    }
+
+    const { data, totalCount } = await menuServices.getManyMenu(filter, limit, skip);
+
+    // Calculate total pages
+    const totalPages = Math.ceil(totalCount / limit);
+
+    // Send response with pagination info
+    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
+      posts: data,
+      totalCount,
+      totalPages,
+      currentPage: page,
+    });
+  } else {
+    // Call the service method to get all posts for non-admin users
+    const result = await menuServices.getAllMenu();
+    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
+  }
 });
+

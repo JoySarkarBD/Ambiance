@@ -3,22 +3,49 @@ import { Router } from 'express';
 
 // Import controller from corresponding module
 import {
-  createManyMenu,
   createMenu,
   deleteManyMenu,
   deleteMenu,
-  getManyMenu,
+  getAllMenu,
   getMenuById,
-  updateManyMenu,
   updateMenu,
 } from './menu.controller';
 
 //Import validation from corresponding module
 import { validateId, validateIds } from '../../handlers/common-zod-validator';
-import { validateMenu } from './menu.validation';
+import isAllowed from '../../middlewares/auth/is-allowed';
+import isAuthorized from '../../middlewares/auth/is-authorized';
+import { validateMenu, validateSearchQuery } from './menu.validation';
 
 // Initialize router
 const router = Router();
+
+/**
+ * @route GET /api/v1/menu/get-menus
+ * @description Get multiple menu
+ * @access Public
+ * @param {function} controller - ['getAllMenu']
+ * @param {function} validation - ['validateIds']
+ */
+router.get('/get-menus', validateIds, getAllMenu);
+
+/**
+ * @route GET /api/v1/menu/get-menu/:id
+ * @description Get a menu by ID
+ * @param {string} id - The ID of the menu to retrieve
+ * @access Public
+ * @param {function} controller - ['getMenuById']
+ * @param {function} validation - ['validateId']
+ */
+router.get('/get-menu/:id', validateId, getMenuById);
+
+/**
+ * @description check if user is authorized
+ * @param {function} middleware - ['isAuthorized']
+ * @returns {object} - router
+ * @method USE
+ */
+router.use(isAuthorized);
 
 // Define route handlers
 /**
@@ -27,25 +54,9 @@ const router = Router();
  * @access Admin
  * @param {function} controller - ['createMenu']
  * @param {function} validation - ['validateMenu']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.post('/create-menu', validateMenu, createMenu);
-
-/**
- * @route POST /api/v1/menu/create-menu/many
- * @description Create multiple menu
- * @access Admin
- * @param {function} controller - ['createManyMenu']
- */
-router.post('/create-menu/many', createManyMenu);
-
-/**
- * @route PUT /api/v1/menu/update-menu/many
- * @description Update multiple menu information
- * @access Admin
- * @param {function} controller - ['updateManyMenu']
- * @param {function} validation - ['validateIds']
- */
-router.put('/update-menu/many', validateIds, updateManyMenu);
+router.post('/create-menu', isAllowed(['admin']), validateMenu, createMenu);
 
 /**
  * @route PUT /api/v1/menu/update-menu/:id
@@ -54,8 +65,9 @@ router.put('/update-menu/many', validateIds, updateManyMenu);
  * @access Admin
  * @param {function} controller - ['updateMenu']
  * @param {function} validation - ['validateId', 'validateMenu']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.put('/update-menu/:id', validateId, validateMenu, updateMenu);
+router.put('/update-menu/:id', isAllowed(['admin']), validateId, validateMenu, updateMenu);
 
 /**
  * @route DELETE /api/v1/menu/delete-menu/many
@@ -63,8 +75,9 @@ router.put('/update-menu/:id', validateId, validateMenu, updateMenu);
  * @access Admin
  * @param {function} controller - ['deleteManyMenu']
  * @param {function} validation - ['validateIds']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.delete('/delete-menu/many', validateIds, deleteManyMenu);
+router.delete('/delete-menu/many', isAllowed(['admin']), validateIds, deleteManyMenu);
 
 /**
  * @route DELETE /api/v1/menu/delete-menu/:id
@@ -73,28 +86,21 @@ router.delete('/delete-menu/many', validateIds, deleteManyMenu);
  * @access Admin
  * @param {function} controller - ['deleteMenu']
  * @param {function} validation - ['validateId']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.delete('/delete-menu/:id', validateId, deleteMenu);
+router.delete('/delete-menu/:id', isAllowed(['admin']), validateId, deleteMenu);
 
 /**
  * @route GET /api/v1/menu/get-menu/many
  * @description Get multiple menu
  * @access Admin
- * @param {function} controller - ['getManyMenu']
+ * @param {function} controller - ['getAllMenu']
  * @param {function} validation - ['validateIds']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
-router.get('/get-menu/many', validateIds, getManyMenu);
-
-/**
- * @route GET /api/v1/menu/get-menu/:id
- * @description Get a menu by ID
- * @param {string} id - The ID of the menu to retrieve
- * @access Admin
- * @param {function} controller - ['getMenuById']
- * @param {function} validation - ['validateId']
- */
-router.get('/get-menu/:id', validateId, getMenuById);
+router.get('/get-menu/many', isAllowed(['admin']), validateSearchQuery, getAllMenu);
 
 // Export the router
 
 module.exports = router;
+

@@ -1,5 +1,5 @@
 // Import the model
-import MenuModel from './menu.model';
+import MenuModel, { IMenu } from './menu.model';
 
 /**
  * Service function to create a new menu.
@@ -7,19 +7,9 @@ import MenuModel from './menu.model';
  * @param data - The data to create a new menu.
  * @returns {Promise<Menu>} - The created menu.
  */
-const createMenu = async (data: object) => {
+const createMenu = async (data: Partial<IMenu>): Promise<IMenu> => {
   const newMenu = new MenuModel(data);
   return await newMenu.save();
-};
-
-/**
- * Service function to create multiple menu.
- *
- * @param data - An array of data to create multiple menu.
- * @returns {Promise<Menu[]>} - The created menu.
- */
-const createManyMenu = async (data: object[]) => {
-  return await MenuModel.insertMany(data);
 };
 
 /**
@@ -31,19 +21,6 @@ const createManyMenu = async (data: object[]) => {
  */
 const updateMenu = async (id: string, data: object) => {
   return await MenuModel.findByIdAndUpdate(id, data, { new: true });
-};
-
-/**
- * Service function to update multiple menu.
- *
- * @param data - An array of data to update multiple menu.
- * @returns {Promise<Menu[]>} - The updated menu.
- */
-const updateManyMenu = async (data: { id: string, updates: object }[]) => {
-  const updatePromises = data.map(({ id, updates }) =>
-    MenuModel.findByIdAndUpdate(id, updates, { new: true })
-  );
-  return await Promise.all(updatePromises);
 };
 
 /**
@@ -79,20 +56,35 @@ const getMenuById = async (id: string) => {
 /**
  * Service function to retrieve multiple menu based on query parameters.
  *
- * @param query - The query parameters for filtering menu.
- * @returns {Promise<Menu[]>} - The retrieved menu.
+ * @param filter - The filter criteria for menus.
+ * @param limit - Number of menus per page.
+ * @param skip - Number of menus to skip for pagination.
+ * @returns {Promise<{ data: Post[], totalCount: number }>} - The retrieved menus and total count.
  */
-const getManyMenu = async (query: object) => {
-  return await MenuModel.find(query);
+const getManyMenu = async (filter: object, limit: number, skip: number) => {
+  // Retrieve posts with filter, pagination, and count
+  const data = await MenuModel.find(filter).limit(limit).skip(skip).exec();
+  const totalCount = await MenuModel.countDocuments(filter);
+
+  return { data, totalCount };
+};
+
+/**
+ * Service function to retrieve all menu for non-admin users.
+ *
+ * @returns {Promise<Post[]>} - The retrieved menu.
+ */
+const getAllMenu = async () => {
+  return await MenuModel.find();
 };
 
 export const menuServices = {
   createMenu,
-  createManyMenu,
   updateMenu,
-  updateManyMenu,
   deleteMenu,
   deleteManyMenu,
   getMenuById,
   getManyMenu,
+  getAllMenu,
 };
+
