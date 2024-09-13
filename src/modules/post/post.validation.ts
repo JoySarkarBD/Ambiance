@@ -38,7 +38,13 @@ const zodPostSchema = z
 export const validatePost = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body, excluding imagesToRemove
   const { error, success } = zodPostSchema
-    .omit({ created_by: true, imagesToRemove: true })
+    .omit({
+      created_by: true,
+      imagesToRemove: true,
+      searchKey: true,
+      showPerPage: true,
+      pageNo: true,
+    })
     .safeParse({
       title: req.body.title,
       subtitle: req.body?.subtitle,
@@ -113,4 +119,3 @@ export const validateSearchQuery = (req: Request, res: Response, next: NextFunct
   // If validation passed, proceed to the next middleware function
   return next();
 };
-
