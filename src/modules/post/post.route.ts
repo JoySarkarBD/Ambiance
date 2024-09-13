@@ -21,7 +21,7 @@ import { validateImageRemovePath, validatePost } from './post.validation';
 const router = Router();
 
 /**
- * @route GET /api/v1/post/get-post/many
+ * @route GET /api/v1/post/get-post
  * @description Get multiple post
  * @access Public
  * @param {function} controller - ['getPosts']
@@ -108,4 +108,3 @@ router.get('/get-post/:id', isAllowed(['admin']), validateId, getPostById);
 // Export the router
 
 module.exports = router;
-
