@@ -21,7 +21,10 @@ const zodSocialSchema = z
  */
 export const validateSocial = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
-  const { error, success } = zodSocialSchema.pick({ name: true, url: true }).safeParse(req.body);
+  const { error, success } = zodSocialSchema.pick({ name: true, url: true }).safeParse({
+    name: req.body.name,
+    url: req.body.url,
+  });
 
   // Check if validation was successful
   if (!success) {
@@ -32,4 +35,3 @@ export const validateSocial = (req: Request, res: Response, next: NextFunction) 
   // If validation passed, proceed to the next middleware function
   return next();
 };
-

@@ -14,7 +14,6 @@ import { socialServices } from './social.service';
 export const createSocial = catchAsync(async (req: Request, res: Response) => {
   // Ensure the user is properly attached to the request and set `created_by`
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
-
   // Call the service method to create a new social and get the result
   const result = await socialServices.createSocial(req.body);
   // Send a success response with the created resource data
@@ -30,6 +29,8 @@ export const createSocial = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateSocial = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  // Ensure the user is properly attached to the request and set `created_by`
+  req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to update the social by ID and get the result
   const result = await socialServices.updateSocial(id, req.body);
   // Send a success response with the updated resource data
@@ -93,4 +94,3 @@ export const getAllSocial = catchAsync(async (req: Request, res: Response) => {
   // Send a success response with the retrieved resources data
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });
-

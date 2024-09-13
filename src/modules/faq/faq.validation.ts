@@ -8,7 +8,7 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
 const zodFaqSchema = z
   .object({
     title: z.string().min(1, 'Title is required').trim(),
-    description: z.string().min(1, 'description is required').trim(),
+    description: z.string().min(1, 'Description is required').trim(),
   })
   .strict();
 
@@ -21,9 +21,10 @@ const zodFaqSchema = z
  */
 export const validateFaq = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
-  const { error, success } = zodFaqSchema
-    .pick({ title: true, description: true })
-    .safeParse(req.body);
+  const { error, success } = zodFaqSchema.pick({ title: true, description: true }).safeParse({
+    title: req.body.title,
+    description: req.body.description,
+  });
 
   // Check if validation was successful
   if (!success) {

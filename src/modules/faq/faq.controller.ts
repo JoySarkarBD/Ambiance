@@ -14,10 +14,8 @@ import { faqServices } from './faq.service';
 export const createFaq = catchAsync(async (req: Request, res: Response) => {
   // Ensure the user is properly attached to the request and set `created_by`
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
-
   // Call the service method to create a new FAQ and get the result
   const result = await faqServices.createFaq(req.body);
-
   // Send a success response with the created FAQ data
   ServerResponse(res, true, 201, 'FAQ created successfully', result);
 });
@@ -31,6 +29,8 @@ export const createFaq = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateFaq = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  // Ensure the user is properly attached to the request and set `created_by`
+  req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to update the faq by ID and get the result
   const result = await faqServices.updateFaq(id, req.body);
   // Send a success response with the updated resource data
