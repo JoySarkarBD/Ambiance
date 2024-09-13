@@ -14,7 +14,7 @@ const MODEL_NAME = 'post';
 // Helper function to save a single file
 async function saveFile(file: UploadedFile, subFolder: string): Promise<string> {
   const fileName = `${uuidv4()}${path.extname(file.name)}`;
-  const relativePath = path.join(MODEL_NAME, subFolder);
+  const relativePath = path.join('uploads', MODEL_NAME, subFolder);
   const absolutePath = path.join(__dirname, '../../../public', relativePath);
 
   // Ensure the directory exists
@@ -24,7 +24,7 @@ async function saveFile(file: UploadedFile, subFolder: string): Promise<string> 
   await file.mv(filePath);
 
   // Return the path relative to the public folder
-  return `/${MODEL_NAME}/${subFolder}/${fileName}`;
+  return `/uploads/${MODEL_NAME}/${subFolder}/${fileName}`;
 }
 
 // Helper function to save multiple images
@@ -156,6 +156,7 @@ export const updatePost = catchAsync(async (req: Request, res: Response) => {
     ...req.body,
     banner: bannerPath,
     images: updatedImages,
+    created_by: new mongoose.Types.ObjectId(req.user?._id),
   };
 
   // Call the service method to update the post by ID and get the result
@@ -294,4 +295,3 @@ export const getPosts = catchAsync(async (req: Request, res: Response) => {
     return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
   }
 });
-
