@@ -1,71 +1,88 @@
-// Import the model
 import FaqModel, { IFaq } from './faq.model';
 
 /**
- * Service function to create a new faq.
+ * Service function to create a new FAQ.
  *
- * @param data - The data to create a new faq.
- * @returns {Promise<Faq>} - The created faq.
+ * @param {Partial<IFaq>} data - The data to create a new FAQ.
+ * @returns {Promise<IFaq>} - The created FAQ.
+ * @throws {Error} - Throws an error if the FAQ creation fails.
  */
 const createFaq = async (data: Partial<IFaq>): Promise<IFaq> => {
   const newFaq = new FaqModel(data);
-  return await newFaq.save();
+  const savedFaq = await newFaq.save();
+  if (!savedFaq) throw new Error('Failed to create FAQ');
+  return savedFaq;
 };
 
 /**
- * Service function to update a single faq by ID.
+ * Service function to update a single FAQ by ID.
  *
- * @param id - The ID of the faq to update.
- * @param data - The updated data for the faq.
- * @returns {Promise<Faq>} - The updated faq.
+ * @param {string} id - The ID of the FAQ to update.
+ * @param {Partial<IFaq>} data - The updated data for the FAQ.
+ * @returns {Promise<IFaq | null>} - The updated FAQ or null if not found.
+ * @throws {Error} - Throws an error if the FAQ update fails.
  */
-const updateFaq = async (id: string, data: object) => {
-  return await FaqModel.findByIdAndUpdate(id, data, { new: true });
+const updateFaq = async (id: string, data: Partial<IFaq>): Promise<IFaq | null> => {
+  const updatedFaq = await FaqModel.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedFaq) throw new Error('Failed to update FAQ');
+  return updatedFaq;
 };
 
 /**
- * Service function to delete a single faq by ID.
+ * Service function to delete a single FAQ by ID.
  *
- * @param id - The ID of the faq to delete.
- * @returns {Promise<Faq>} - The deleted faq.
+ * @param {string} id - The ID of the FAQ to delete.
+ * @returns {Promise<IFaq | null>} - The deleted FAQ or null if not found.
+ * @throws {Error} - Throws an error if the FAQ deletion fails.
  */
-const deleteFaq = async (id: string) => {
-  return await FaqModel.findByIdAndDelete(id);
+const deleteFaq = async (id: string): Promise<IFaq | null> => {
+  const deletedFaq = await FaqModel.findByIdAndDelete(id);
+  if (!deletedFaq) throw new Error('Failed to delete FAQ');
+  return deletedFaq;
 };
 
 /**
- * Service function to delete multiple faq.
+ * Service function to delete multiple FAQs by IDs.
  *
- * @param ids - An array of IDs of faq to delete.
- * @returns {Promise<Faq[]>} - The deleted faq.
+ * @param {string[]} ids - An array of IDs of FAQs to delete.
+ * @returns {Promise<number>} - The number of deleted FAQs.
+ * @throws {Error} - Throws an error if the deletion fails or no FAQs were deleted.
  */
-const deleteManyFaq = async (ids: string[]) => {
-  return await FaqModel.deleteMany({ _id: { $in: ids } });
+const deleteManyFaq = async (ids: string[]): Promise<number> => {
+  const result = await FaqModel.deleteMany({ _id: { $in: ids } });
+  if (!result || result.deletedCount === 0) throw new Error('Failed to delete FAQs');
+  return result.deletedCount;
 };
 
 /**
- * Service function to retrieve a single faq by ID.
+ * Service function to retrieve a single FAQ by ID.
  *
- * @param id - The ID of the faq to retrieve.
- * @returns {Promise<Faq>} - The retrieved faq.
+ * @param {string} id - The ID of the FAQ to retrieve.
+ * @returns {Promise<IFaq | null>} - The retrieved FAQ or null if not found.
+ * @throws {Error} - Throws an error if the FAQ is not found.
  */
-const getFaqById = async (id: string) => {
-  return await FaqModel.findById(id).populate({
+const getFaqById = async (id: string): Promise<IFaq | null> => {
+  const faq = await FaqModel.findById(id).populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!faq) throw new Error('FAQ not found');
+  return faq;
 };
 
 /**
- * Service function to retrieve all faq.
+ * Service function to retrieve all FAQs.
  *
- * @returns {Promise<Faq[]>} - The retrieved faq.
+ * @returns {Promise<IFaq[]>} - An array of all FAQs.
+ * @throws {Error} - Throws an error if the FAQs retrieval fails.
  */
-const getAllFaq = async () => {
-  return await FaqModel.find().populate({
+const getAllFaq = async (): Promise<IFaq[]> => {
+  const faqs = await FaqModel.find().populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!faqs) throw new Error('Failed to retrieve FAQs');
+  return faqs;
 };
 
 export const faqServices = {

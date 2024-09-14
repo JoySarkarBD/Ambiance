@@ -5,9 +5,9 @@ import catchAsync from '../../utils/catch-async/catch-async';
 import { faqServices } from './faq.service';
 
 /**
- * Controller function to handle the creation of a single Faq.
+ * Controller function to handle the creation of a single FAQ.
  *
- * @param {Request} req - The request object containing faq data in the body.
+ * @param {Request} req - The request object containing FAQ data in the body and user information.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
@@ -21,77 +21,75 @@ export const createFaq = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the update operation for a single faq.
+ * Controller function to handle the update operation for a single FAQ.
  *
- * @param {Request} req - The request object containing the ID of the faq to update in URL parameters and the updated data in the body.
+ * @param {Request} req - The request object containing the ID of the FAQ to update in URL parameters and updated data in the body.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const updateFaq = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Ensure the user is properly attached to the request and set `created_by`
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
-  // Call the service method to update the faq by ID and get the result
+  // Call the service method to update the FAQ by ID
   const result = await faqServices.updateFaq(id, req.body);
-  // Send a success response with the updated resource data
-  ServerResponse(res, true, 200, 'Faq updated successfully', result);
+  // Send a success response with the updated FAQ data
+  ServerResponse(res, true, 200, 'FAQ updated successfully', result);
 });
 
 /**
- * Controller function to handle the deletion of a single faq.
+ * Controller function to handle the deletion of a single FAQ.
  *
- * @param {Request} req - The request object containing the ID of the faq to delete in URL parameters.
+ * @param {Request} req - The request object containing the ID of the FAQ to delete in URL parameters.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const deleteFaq = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Call the service method to delete the faq by ID
-  await faqServices.deleteFaq(id);
-  // Send a success response confirming the deletion
-  ServerResponse(res, true, 200, 'Faq deleted successfully');
+  // Call the service method to delete the FAQ by ID
+  const result = await faqServices.deleteFaq(id);
+  // Send a success response confirming the FAQ deletion
+  ServerResponse(res, true, 200, 'FAQ deleted successfully');
 });
 
 /**
- * Controller function to handle the deletion of multiple faq.
+ * Controller function to handle the deletion of multiple FAQs.
  *
- * @param {Request} req - The request object containing an array of IDs of faq to delete in the body.
+ * @param {Request} req - The request object containing an array of IDs of FAQs to delete in the body.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const deleteManyFaq = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to delete multiple faq and get the result
-  await faqServices.deleteManyFaq(req.body);
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
+  // Call the service method to delete multiple FAQs
+  await faqServices.deleteManyFaq(req.body.ids);
+  // Send a success response confirming the FAQs deletion
+  ServerResponse(res, true, 200, 'FAQs deleted successfully');
 });
 
 /**
- * Controller function to handle the retrieval of a single faq by ID.
+ * Controller function to handle the retrieval of a single FAQ by ID.
  *
- * @param {Request} req - The request object containing the ID of the faq to retrieve in URL parameters.
+ * @param {Request} req - The request object containing the ID of the FAQ to retrieve in URL parameters.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getFaqById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-  // Call the service method to get the faq by ID and get the result
+  // Call the service method to get the FAQ by ID
   const result = await faqServices.getFaqById(id);
-  if (result === null) throw new Error('Faq not found');
-  // Send a success response with the retrieved resource data
-  ServerResponse(res, true, 200, 'Faq retrieved successfully', result);
+  // Send a success response with the retrieved FAQ data
+  ServerResponse(res, true, 200, 'FAQ retrieved successfully', result);
 });
 
 /**
- * Controller function to handle the retrieval of all faq.
+ * Controller function to handle the retrieval of all FAQs.
  *
- * @param {Request} req - The Express request object (not used in this case).
+ * @param {Request} req - The request object containing query parameters for filtering, if any.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getAllFaq = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get multiple faq based on query parameters and get the result
+  // Call the service method to get all FAQs
   const result = await faqServices.getAllFaq();
-  // Send a success response with the retrieved resources data
-  ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
+  // Send a success response with the retrieved FAQs data
+  ServerResponse(res, true, 200, 'FAQs retrieved successfully', result);
 });

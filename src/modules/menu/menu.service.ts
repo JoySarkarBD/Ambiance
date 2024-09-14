@@ -1,4 +1,3 @@
-// Import the model
 import MenuModel, { IMenu } from './menu.model';
 
 /**
@@ -9,7 +8,9 @@ import MenuModel, { IMenu } from './menu.model';
  */
 const createMenu = async (data: Partial<IMenu>): Promise<IMenu> => {
   const newMenu = new MenuModel(data);
-  return await newMenu.save();
+  const savedMenu = await newMenu.save();
+  if (!savedMenu) throw new Error('Failed to create menu');
+  return savedMenu;
 };
 
 /**
@@ -19,8 +20,10 @@ const createMenu = async (data: Partial<IMenu>): Promise<IMenu> => {
  * @param data - The updated data for the menu.
  * @returns {Promise<Menu>} - The updated menu.
  */
-const updateMenu = async (id: string, data: object) => {
-  return await MenuModel.findByIdAndUpdate(id, data, { new: true });
+const updateMenu = async (id: string, data: object): Promise<IMenu | null> => {
+  const updatedMenu = await MenuModel.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedMenu) throw new Error('Failed to update menu');
+  return updatedMenu;
 };
 
 /**
@@ -29,18 +32,22 @@ const updateMenu = async (id: string, data: object) => {
  * @param id - The ID of the menu to delete.
  * @returns {Promise<Menu>} - The deleted menu.
  */
-const deleteMenu = async (id: string) => {
-  return await MenuModel.findByIdAndDelete(id);
+const deleteMenu = async (id: string): Promise<IMenu | null> => {
+  const deletedMenu = await MenuModel.findByIdAndDelete(id);
+  if (!deletedMenu) throw new Error('Failed to delete menu');
+  return deletedMenu;
 };
 
 /**
- * Service function to delete multiple menu.
+ * Service function to delete multiple menus.
  *
- * @param ids - An array of IDs of menu to delete.
- * @returns {Promise<Menu[]>} - The deleted menu.
+ * @param ids - An array of IDs of menus to delete.
+ * @returns {Promise<number>} - The number of deleted menus.
  */
-const deleteManyMenu = async (ids: string[]) => {
-  return await MenuModel.deleteMany({ _id: { $in: ids } });
+const deleteManyMenu = async (ids: string[]): Promise<number> => {
+  const result = await MenuModel.deleteMany({ _id: { $in: ids } });
+  if (result.deletedCount === 0) throw new Error('Failed to delete menus');
+  return result.deletedCount;
 };
 
 /**
@@ -49,23 +56,28 @@ const deleteManyMenu = async (ids: string[]) => {
  * @param id - The ID of the menu to retrieve.
  * @returns {Promise<Menu>} - The retrieved menu.
  */
-const getMenuById = async (id: string) => {
-  return await MenuModel.findById(id).populate({
+const getMenuById = async (id: string): Promise<IMenu | null> => {
+  const menu = await MenuModel.findById(id).populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!menu) throw new Error('Menu not found');
+  return menu;
 };
 
 /**
- * Service function to retrieve multiple menu based on query parameters.
+ * Service function to retrieve multiple menus based on query parameters.
  *
  * @param filter - The filter criteria for menus.
  * @param limit - Number of menus per page.
  * @param skip - Number of menus to skip for pagination.
- * @returns {Promise<{ data: Post[], totalCount: number }>} - The retrieved menus and total count.
+ * @returns {Promise<{ data: Menu[], totalCount: number }>} - The retrieved menus and total count.
  */
-const getManyMenu = async (filter: object, limit: number, skip: number) => {
-  // Retrieve posts with filter, pagination, and count
+const getManyMenu = async (
+  filter: object,
+  limit: number,
+  skip: number
+): Promise<{ data: IMenu[]; totalCount: number }> => {
   const data = await MenuModel.find(filter)
     .populate({
       path: 'created_by',
@@ -76,19 +88,23 @@ const getManyMenu = async (filter: object, limit: number, skip: number) => {
     .exec();
   const totalCount = await MenuModel.countDocuments(filter);
 
+  if (!data || totalCount === 0) throw new Error('Failed to retrieve menus');
+
   return { data, totalCount };
 };
 
 /**
- * Service function to retrieve all menu for non-admin users.
+ * Service function to retrieve all menus for non-admin users.
  *
- * @returns {Promise<Post[]>} - The retrieved menu.
+ * @returns {Promise<Menu[]>} - The retrieved menus.
  */
-const getAllMenu = async () => {
-  return await MenuModel.find().populate({
+const getAllMenu = async (): Promise<IMenu[]> => {
+  const menus = await MenuModel.find().populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!menus) throw new Error('Failed to retrieve menus');
+  return menus;
 };
 
 export const menuServices = {

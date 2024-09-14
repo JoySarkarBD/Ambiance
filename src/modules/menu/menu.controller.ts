@@ -33,7 +33,6 @@ export const updateMenu = catchAsync(async (req: Request, res: Response) => {
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to update the menu by ID and get the result
   const result = await menuServices.updateMenu(id, req.body);
-  if (result === null) throw new Error('Menu not found');
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Menu updated successfully', result);
 });
@@ -48,10 +47,7 @@ export const updateMenu = catchAsync(async (req: Request, res: Response) => {
 export const deleteMenu = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to delete the menu by ID
-  const result = await menuServices.deleteMenu(id);
-
-  if (result === null) throw new Error('Menu not found');
-
+  await menuServices.deleteMenu(id);
   // Send a success response confirming the deletion
   ServerResponse(res, true, 200, 'Menu deleted successfully');
 });
@@ -81,9 +77,6 @@ export const getMenuById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to get the menu by ID and get the result
   const result = await menuServices.getMenuById(id);
-
-  if (result === null) throw new Error('Menu not found');
-
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Menu retrieved successfully', result);
 });

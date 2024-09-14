@@ -107,6 +107,7 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
 
   // Call the service method to create a new project and get the result
   const result = await projectServices.createProject(projectData);
+
   // Send a success response with the created resource data
   ServerResponse(res, true, 201, 'Project created successfully', result);
 });

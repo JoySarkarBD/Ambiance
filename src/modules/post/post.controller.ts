@@ -250,7 +250,9 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to get the post by ID and get the result
   const result = await postServices.getPostById(id);
 
-  if (result === null) throw new Error('Post not found');
+  if (!result) {
+    throw new Error('Post not found');
+  }
 
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Post retrieved successfully', result);

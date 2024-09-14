@@ -1,4 +1,3 @@
-// Import the model
 import SocialModel, { ISocial } from './social.model';
 
 /**
@@ -6,10 +5,13 @@ import SocialModel, { ISocial } from './social.model';
  *
  * @param data - The data to create a new social.
  * @returns {Promise<ISocial>} - The created social.
+ * @throws {Error} - Throws an error if the social creation fails.
  */
-const createSocial = async (data: Promise<ISocial>): Promise<ISocial> => {
+const createSocial = async (data: Partial<ISocial>): Promise<ISocial> => {
   const newSocial = new SocialModel(data);
-  return await newSocial.save();
+  const savedSocial = await newSocial.save();
+  if (!savedSocial) throw new Error('Failed to create social');
+  return savedSocial;
 };
 
 /**
@@ -17,69 +19,86 @@ const createSocial = async (data: Promise<ISocial>): Promise<ISocial> => {
  *
  * @param id - The ID of the social to update.
  * @param data - The updated data for the social.
- * @returns {Promise<Social>} - The updated social.
+ * @returns {Promise<ISocial | null>} - The updated social or null if not found.
+ * @throws {Error} - Throws an error if the social update fails.
  */
-const updateSocial = async (id: string, data: object) => {
-  return await SocialModel.findByIdAndUpdate(id, data, { new: true });
+const updateSocial = async (id: string, data: Partial<ISocial>): Promise<ISocial | null> => {
+  const updatedSocial = await SocialModel.findByIdAndUpdate(id, data, { new: true });
+  if (!updatedSocial) throw new Error('Failed to update social');
+  return updatedSocial;
 };
 
 /**
  * Service function to delete a single social by ID.
  *
  * @param id - The ID of the social to delete.
- * @returns {Promise<Social>} - The deleted social.
+ * @returns {Promise<ISocial | null>} - The deleted social or null if not found.
+ * @throws {Error} - Throws an error if the social deletion fails.
  */
-const deleteSocial = async (id: string) => {
-  return await SocialModel.findByIdAndDelete(id);
+const deleteSocial = async (id: string): Promise<ISocial | null> => {
+  const deletedSocial = await SocialModel.findByIdAndDelete(id);
+  if (!deletedSocial) throw new Error('Failed to delete social');
+  return deletedSocial;
 };
 
 /**
- * Service function to delete multiple social.
+ * Service function to delete multiple socials by IDs.
  *
- * @param ids - An array of IDs of social to delete.
- * @returns {Promise<Social[]>} - The deleted social.
+ * @param ids - An array of IDs of socials to delete.
+ * @returns {Promise<number>} - The number of deleted socials.
+ * @throws {Error} - Throws an error if the deletion fails or no socials were deleted.
  */
-const deleteManySocial = async (ids: string[]) => {
-  return await SocialModel.deleteMany({ _id: { $in: ids } });
+const deleteManySocial = async (ids: string[]): Promise<number> => {
+  const result = await SocialModel.deleteMany({ _id: { $in: ids } });
+  if (!result || result.deletedCount === 0) throw new Error('Failed to delete socials');
+  return result.deletedCount;
 };
 
 /**
  * Service function to retrieve a single social by ID.
  *
  * @param id - The ID of the social to retrieve.
- * @returns {Promise<Social>} - The retrieved social.
+ * @returns {Promise<ISocial | null>} - The retrieved social or null if not found.
+ * @throws {Error} - Throws an error if the social is not found.
  */
-const getSocialById = async (id: string) => {
-  return await SocialModel.findById(id).populate({
+const getSocialById = async (id: string): Promise<ISocial | null> => {
+  const social = await SocialModel.findById(id).populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!social) throw new Error('Social not found');
+  return social;
 };
 
 /**
- * Service function to retrieve all social .
+ * Service function to retrieve all socials.
  *
- * @returns {Promise<Social[]>} - The retrieved social.
+ * @returns {Promise<ISocial[]>} - The retrieved socials.
+ * @throws {Error} - Throws an error if the retrieval fails.
  */
-const getAllSocial = async () => {
-  return await SocialModel.find().populate({
+const getAllSocial = async (): Promise<ISocial[]> => {
+  const socials = await SocialModel.find().populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!socials) throw new Error('Failed to retrieve socials');
+  return socials;
 };
 
 /**
  * Service function to retrieve a single social by name.
  *
- * @param {string} name - The name of the social to retrieve.
- * @returns {Promise<Social>} - The retrieved social document populated with the creator's details.
+ * @param name - The name of the social to retrieve.
+ * @returns {Promise<ISocial | null>} - The retrieved social document or null if not found.
+ * @throws {Error} - Throws an error if the social is not found.
  */
-const getSocialByName = async (name: string) => {
-  // Find the social by name, populate 'created_by' field with specific user details
-  return await SocialModel.findOne({ name }).populate({
+const getSocialByName = async (name: string): Promise<ISocial | null> => {
+  const social = await SocialModel.findOne({ name }).populate({
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
+  if (!social) throw new Error('Social not found');
+  return social;
 };
 
 export const socialServices = {
