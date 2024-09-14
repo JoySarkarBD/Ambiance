@@ -135,7 +135,44 @@ const aboutUser = async () => {
   return user[0];
 };
 
+/**
+ * Service function to toggle the `showData` field for a user by ID.
+ * If the updated `showData` value is `true`, set the `showData` field for all other users to `false`.
+ *
+ * @param {string} id - The ID of the user to update.
+ * @returns {Promise<object>} - The updated user with the toggled `showData` value.
+ */
+const updateShowData = async (id: string) => {
+  // Find the user by ID
+  const user = await UserModel.findOne({ _id: id, showData: false });
+
+  if (!user) {
+    throw new Error('User not found or showData is not true');
+  }
+
+  // Reverse the `showData` field (if true, set to false, and vice versa)
+  const newShowData = !user.showData;
+
+  // Update the user's `showData` field
+  const updatedUser = await UserModel.findByIdAndUpdate(
+    id,
+    { showData: newShowData },
+    { new: true }
+  );
+
+  // If the new `showData` is set to true, update all other users' `showData` to false
+  if (newShowData) {
+    await UserModel.updateMany(
+      { _id: { $ne: id } }, // Exclude the updated user
+      { showData: false }
+    );
+  }
+
+  return updatedUser;
+};
+
 export const userServices = {
   updateUser,
   aboutUser,
+  updateShowData,
 };

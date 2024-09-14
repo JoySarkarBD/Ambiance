@@ -93,3 +93,20 @@ export const aboutUser = catchAsync(async (req: Request, res: Response) => {
   // Send a success response with the user information
   ServerResponse(res, true, 200, 'User retrieved successfully', result);
 });
+
+/**
+ * Controller function to handle updating the user's showData field.
+ *
+ * @param {Request} req - The request object containing the ID of the user in URL parameters.
+ * @param {Response} res - The response object used to send the response.
+ * @returns {void}
+ */
+export const updateShowData = catchAsync(async (req: Request, res: Response) => {
+  const { id } = req.params;
+
+  // Call the service method to update the user's showData field
+  const result = await userServices.updateShowData(id);
+
+  // Send a success response with the updated user data
+  ServerResponse(res, true, 200, 'User showData updated successfully', result);
+});

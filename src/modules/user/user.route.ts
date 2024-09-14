@@ -2,7 +2,7 @@
 import { Router } from 'express';
 
 // Import controller from corresponding module
-import { aboutUser, updateUser } from './user.controller';
+import { aboutUser, updateShowData, updateUser } from './user.controller';
 
 //Import validation from corresponding module
 import { validateId } from '../../handlers/common-zod-validator';
@@ -39,6 +39,15 @@ router.use(isAuthorized);
  * @param {function} validation - ['validateId', 'validateUser']
  */
 router.put('/update-user/:id', validateId, validateUser, updateUser);
+
+/**
+ * @route PUT /api/v1/user/update-user-show-data
+ * @description Update user show data
+ * @access Authorized
+ * @param {function} controller - ['updateShowData']
+ * @param {function} validation - ['validateId']
+ */
+router.put('/update-user-show-data/:id', validateId, updateShowData);
 
 // Export the router
 module.exports = router;
