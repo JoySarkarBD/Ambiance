@@ -50,7 +50,10 @@ const deleteManySocial = async (ids: string[]) => {
  * @returns {Promise<Social>} - The retrieved social.
  */
 const getSocialById = async (id: string) => {
-  return await SocialModel.findById(id);
+  return await SocialModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**

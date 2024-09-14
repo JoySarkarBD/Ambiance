@@ -50,7 +50,10 @@ const deleteManyOption = async (ids: string[]) => {
  * @returns {Promise<Option>} - The retrieved option.
  */
 const getOptionByName = async (name: string) => {
-  return await OptionModel.find({ name });
+  return await OptionModel.find({ name }).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**

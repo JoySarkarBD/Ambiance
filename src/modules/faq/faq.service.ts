@@ -50,7 +50,10 @@ const deleteManyFaq = async (ids: string[]) => {
  * @returns {Promise<Faq>} - The retrieved faq.
  */
 const getFaqById = async (id: string) => {
-  return await FaqModel.findById(id);
+  return await FaqModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**

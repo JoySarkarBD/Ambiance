@@ -50,7 +50,10 @@ const deleteManyMenu = async (ids: string[]) => {
  * @returns {Promise<Menu>} - The retrieved menu.
  */
 const getMenuById = async (id: string) => {
-  return await MenuModel.findById(id);
+  return await MenuModel.findById(id).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 /**
@@ -87,4 +90,3 @@ export const menuServices = {
   getManyMenu,
   getAllMenu,
 };
-
