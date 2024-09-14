@@ -92,8 +92,8 @@ router.delete('/delete-social/:id', isAllowed(['admin']), validateId, deleteSoci
 
 /**
  * @route GET /api/v1/social/get-social-details/:name
- * @description Get a social by ID
- * @param {string} id - The name of the social to retrieve
+ * @description Get a social by name
+ * @param {string} name - The name of the social to retrieve
  * @access Admin
  * @param {function} controller - ['getSocialByName']
  * @param {function} validation - ['validateSocialName']
