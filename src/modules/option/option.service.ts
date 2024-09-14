@@ -62,7 +62,10 @@ const getOptionByName = async (name: string) => {
  * @returns {Promise<Option[]>} - The retrieved option.
  */
 const getAllOption = async () => {
-  return await OptionModel.find();
+  return await OptionModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const optionServices = {

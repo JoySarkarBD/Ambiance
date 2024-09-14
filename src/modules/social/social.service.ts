@@ -62,7 +62,10 @@ const getSocialById = async (id: string) => {
  * @returns {Promise<Social[]>} - The retrieved social.
  */
 const getAllSocial = async () => {
-  return await SocialModel.find();
+  return await SocialModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const socialServices = {

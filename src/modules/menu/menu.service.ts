@@ -66,7 +66,14 @@ const getMenuById = async (id: string) => {
  */
 const getManyMenu = async (filter: object, limit: number, skip: number) => {
   // Retrieve posts with filter, pagination, and count
-  const data = await MenuModel.find(filter).limit(limit).skip(skip).exec();
+  const data = await MenuModel.find(filter)
+    .populate({
+      path: 'created_by',
+      select: 'first_name last_name avatar',
+    })
+    .limit(limit)
+    .skip(skip)
+    .exec();
   const totalCount = await MenuModel.countDocuments(filter);
 
   return { data, totalCount };
@@ -78,7 +85,10 @@ const getManyMenu = async (filter: object, limit: number, skip: number) => {
  * @returns {Promise<Post[]>} - The retrieved menu.
  */
 const getAllMenu = async () => {
-  return await MenuModel.find();
+  return await MenuModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const menuServices = {

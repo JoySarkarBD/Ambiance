@@ -56,7 +56,14 @@ const getPostById = async (id: string) => {
  */
 const getManyPost = async (filter: object, limit: number, skip: number) => {
   // Retrieve posts with filter, pagination, and count
-  const data = await PostModel.find(filter).limit(limit).skip(skip).exec();
+  const data = await PostModel.find(filter)
+    .populate({
+      path: 'created_by',
+      select: 'first_name last_name avatar',
+    })
+    .limit(limit)
+    .skip(skip)
+    .exec();
   const totalCount = await PostModel.countDocuments(filter);
 
   return { data, totalCount };
@@ -68,7 +75,10 @@ const getManyPost = async (filter: object, limit: number, skip: number) => {
  * @returns {Promise<Post[]>} - The retrieved posts.
  */
 const getAllPost = async () => {
-  return await PostModel.find();
+  return await PostModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const postServices = {

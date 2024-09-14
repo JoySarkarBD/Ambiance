@@ -90,7 +90,14 @@ const getProjectById = async (id: string) => {
  */
 const getManyProject = async (filter: object, limit: number, skip: number) => {
   // Retrieve projects with filter, pagination, and count
-  const data = await ProjectModel.find(filter).limit(limit).skip(skip).exec();
+  const data = await ProjectModel.find(filter)
+    .populate({
+      path: 'created_by',
+      select: 'first_name last_name avatar',
+    })
+    .limit(limit)
+    .skip(skip)
+    .exec();
   const totalCount = await ProjectModel.countDocuments(filter);
 
   return { data, totalCount };
@@ -102,7 +109,10 @@ const getManyProject = async (filter: object, limit: number, skip: number) => {
  * @returns {Promise<project[]>} - The retrieved projects.
  */
 const getAllProject = async () => {
-  return await ProjectModel.find();
+  return await ProjectModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const projectServices = {

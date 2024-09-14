@@ -62,7 +62,10 @@ const getFaqById = async (id: string) => {
  * @returns {Promise<Faq[]>} - The retrieved faq.
  */
 const getAllFaq = async () => {
-  return await FaqModel.find();
+  return await FaqModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
 };
 
 export const faqServices = {

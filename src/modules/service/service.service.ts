@@ -89,7 +89,14 @@ const getServiceById = async (id: string) => {
  */
 const getManyService = async (filter: object, limit: number, skip: number) => {
   // Retrieve posts with filter, pagination, and count
-  const data = await ServiceModel.find(filter).limit(limit).skip(skip).exec();
+  const data = await ServiceModel.find(filter)
+    .populate({
+      path: 'created_by',
+      select: 'first_name last_name avatar',
+    })
+    .limit(limit)
+    .skip(skip)
+    .exec();
   const totalCount = await ServiceModel.countDocuments(filter);
 
   return { data, totalCount };
@@ -115,4 +122,3 @@ export const serviceServices = {
   getManyService,
   getAllService,
 };
-
