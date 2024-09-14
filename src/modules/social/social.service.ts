@@ -68,6 +68,20 @@ const getAllSocial = async () => {
   });
 };
 
+/**
+ * Service function to retrieve a single social by name.
+ *
+ * @param {string} name - The name of the social to retrieve.
+ * @returns {Promise<Social>} - The retrieved social document populated with the creator's details.
+ */
+const getSocialByName = async (name: string) => {
+  // Find the social by name, populate 'created_by' field with specific user details
+  return await SocialModel.findOne({ name }).populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
+};
+
 export const socialServices = {
   createSocial,
   updateSocial,
@@ -75,4 +89,5 @@ export const socialServices = {
   deleteManySocial,
   getSocialById,
   getAllSocial,
+  getSocialByName,
 };

@@ -8,6 +8,7 @@ import {
   deleteSocial,
   getAllSocial,
   getSocialById,
+  getSocialByName,
   updateSocial,
 } from './social.controller';
 
@@ -15,7 +16,7 @@ import {
 import { validateId, validateIds } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import { validateSocial } from './social.validation';
+import { validateSocial, validateSocialName } from './social.validation';
 
 // Initialize router
 const router = Router();
@@ -50,7 +51,7 @@ router.use(isAuthorized);
 /**
  * @route POST /api/v1/social/create-social
  * @description Create a new social
- * @access Public
+ * @access Admin
  * @param {function} controller - ['createSocial']
  * @param {function} validation - ['validateSocial']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -61,7 +62,7 @@ router.post('/create-social', isAllowed(['admin']), validateSocial, createSocial
  * @route PUT /api/v1/social/update-social/:id
  * @description Update social information
  * @param {string} id - The ID of the social to update
- * @access Public
+ * @access Admin
  * @param {function} controller - ['updateSocial']
  * @param {function} validation - ['validateId', 'validateSocial']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -71,7 +72,7 @@ router.put('/update-social/:id', isAllowed(['admin']), validateId, validateSocia
 /**
  * @route DELETE /api/v1/social/delete-social/many
  * @description Delete multiple social
- * @access Public
+ * @access Admin
  * @param {function} controller - ['deleteManySocial']
  * @param {function} validation - ['validateIds']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -82,12 +83,22 @@ router.delete('/delete-social/many', isAllowed(['admin']), validateIds, deleteMa
  * @route DELETE /api/v1/social/delete-social/:id
  * @description Delete a social
  * @param {string} id - The ID of the social to delete
- * @access Public
+ * @access Admin
  * @param {function} controller - ['deleteSocial']
  * @param {function} validation - ['validateId']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.delete('/delete-social/:id', isAllowed(['admin']), validateId, deleteSocial);
+
+/**
+ * @route GET /api/v1/social/get-social/:name
+ * @description Get a social by ID
+ * @param {string} id - The name of the social to retrieve
+ * @access Admin
+ * @param {function} controller - ['getSocialByName']
+ * @param {function} validation - ['validateSocialName']
+ */
+router.get('/get-social/:name', validateSocialName, getSocialByName);
 
 // Export the router
 module.exports = router;

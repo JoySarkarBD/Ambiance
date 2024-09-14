@@ -94,3 +94,24 @@ export const getAllSocial = catchAsync(async (req: Request, res: Response) => {
   // Send a success response with the retrieved resources data
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });
+
+/**
+ * Controller function to handle the retrieval of a single social by name.
+ * This function handles the main logic for retrieving a social based on the provided name.
+ *
+ * @param {Request} req - The Express request object containing the name parameter.
+ * @param {Response} res - The response object used to send the result back to the client.
+ * @returns {void}
+ */
+export const getSocialByName = catchAsync(async (req: Request, res: Response) => {
+  // Call the service function to get the social by name
+  const result = await socialServices.getSocialByName(req.params.name);
+
+  // If social is not found, return a 404 error response
+  if (!result) {
+    return ServerResponse(res, false, 404, 'Social not found');
+  }
+
+  // Send a success response with the retrieved social data
+  ServerResponse(res, true, 200, 'Social retrieved successfully', result);
+});

@@ -55,3 +55,26 @@ export const validateSocial = (req: Request, res: Response, next: NextFunction) 
   // If validation passed, proceed to the next middleware function
   return next();
 };
+
+/**
+ * Middleware function to validate social using Zod schema.
+ * @param {object} req - The request object.
+ * @param {object} res - The response object.
+ * @param {function} next - The next middleware function.
+ * @returns {void}
+ */
+export const validateSocialName = (req: Request, res: Response, next: NextFunction) => {
+  // Validate request body
+  const { error, success } = zodSocialSchema.pick({ name: true }).safeParse({
+    name: req.params.name,
+  });
+
+  // Check if validation was successful
+  if (!success) {
+    // If validation failed, use the Zod error handler to send an error response
+    return zodErrorHandler(req, res, error);
+  }
+
+  // If validation passed, proceed to the next middleware function
+  return next();
+};
