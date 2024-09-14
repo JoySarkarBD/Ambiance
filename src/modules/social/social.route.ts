@@ -98,7 +98,7 @@ router.delete('/delete-social/:id', isAllowed(['admin']), validateId, deleteSoci
  * @param {function} controller - ['getSocialByName']
  * @param {function} validation - ['validateSocialName']
  */
-router.get('/get-social/:name', validateSocialName, getSocialByName);
+router.get('/get-social-details/:name', validateSocialName, getSocialByName);
 
 // Export the router
 module.exports = router;
