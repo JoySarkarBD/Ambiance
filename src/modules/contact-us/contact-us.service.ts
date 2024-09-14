@@ -1,3 +1,4 @@
+import config from '../../config/config';
 import SendEmail from '../../utils/email/send-email';
 
 /**
@@ -12,12 +13,12 @@ const createContactUs = async (data: { email: string; name: string; [key: string
     to: data.email, // Send confirmation to the contact's email
     text: `Thank you for reaching out, ${data.name}. We have received your message.`,
     subject: 'Contact Us Confirmation',
-    html: `<p>Dear ${data.name},</p><p>Thank you for reaching out to us. We have received your message and will get back to you soon.</p><p>Best regards,</p><p>Your Company</p>`,
+    html: `<p>Dear ${data.name},</p><p>Thank you for reaching out to us. We have received your message and will get back to you soon.</p><p>Best regards,</p><p>Ambiance</p>`,
   };
 
   // Prepare email options for yourself (or another recipient)
   const adminEmailOptions = {
-    to: 'your-email@example.com', // Replace with your email address
+    to: config.EMAIL_USER, // Replace with your email address
     text: `New contact-us message from ${data.name}. Details: ${JSON.stringify(data)}`,
     subject: 'New Contact Us Message',
     html: `<p>You have a new contact-us message from ${data.name}.</p><p>Details:</p><pre>${JSON.stringify(data, null, 2)}</pre>`,

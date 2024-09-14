@@ -21,7 +21,7 @@ interface EmailOptions {
 const SendEmail = async ({ to, text, subject, html }: EmailOptions): Promise<boolean> => {
   const transporter: Transporter = nodemailer.createTransport({
     host: config.EMAIL_HOST,
-    port: config.EMAIL_PORT,
+    // port: config.EMAIL_PORT,
     secure: false,
     auth: {
       user: config.EMAIL_USER,

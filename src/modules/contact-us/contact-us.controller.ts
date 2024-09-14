@@ -12,8 +12,8 @@ import { contactUsServices } from './contact-us.service';
  */
 export const createContactUs = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to create a new contact-us and get the result
-  await contactUsServices.createContactUs(req.body);
+  const result = await contactUsServices.createContactUs(req.body);
   // Send a success response with the created resource data
-  ServerResponse(res, true, 201, 'ContactUs created successfully');
+  ServerResponse(res, true, 201, result);
 });
 
