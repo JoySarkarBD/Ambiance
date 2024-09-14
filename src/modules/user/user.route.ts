@@ -41,7 +41,7 @@ router.use(isAuthorized);
 router.put('/update-user/:id', validateId, validateUser, updateUser);
 
 /**
- * @route PUT /api/v1/user/update-user-show-data
+ * @route PUT /api/v1/user/update-user-show-data/:id
  * @description Update user show data
  * @access Authorized
  * @param {function} controller - ['updateShowData']
