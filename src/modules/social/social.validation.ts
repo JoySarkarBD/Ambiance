@@ -2,12 +2,32 @@ import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import zodErrorHandler from '../../handlers/zod-error-handler';
 
+// Define the social media platforms as an enum
+const SocialMediaEnum = z.enum(
+  [
+    'Facebook',
+    'Twitter',
+    'Instagram',
+    'LinkedIn',
+    'YouTube',
+    'TikTok',
+    'Pinterest',
+    'Google Business',
+  ],
+  {
+    // Custom error message for invalid platform names
+    errorMap: () => ({
+      message: 'Please select a valid social media platform',
+    }),
+  }
+);
+
 /**
  * Zod schema for validating social data.
  */
 const zodSocialSchema = z
   .object({
-    name: z.string().min(1, 'Name is required').trim(),
+    name: SocialMediaEnum,
     url: z.string().url('Invalid URL format').min(1, 'URL is required').trim(),
   })
   .strict();

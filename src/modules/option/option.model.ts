@@ -1,9 +1,19 @@
 import mongoose, { Document, Schema } from 'mongoose';
 
-// Define an interface representing a Option document
+// Define an enum for option names
+export enum OptionName {
+  SiteUrl = 'site-url',
+  SiteTitle = 'site-title',
+  PrivacyPolicy = 'privacy-policy',
+  Contact = 'contact',
+  Email = 'email',
+  TermsConditions = 'terms-conditions',
+}
+
+// Define an interface representing an Option document
 export interface IOption extends Document {
   _id: string;
-  name: string;
+  name: OptionName; // Enum type for the name field
   value: string;
   created_by: mongoose.Types.ObjectId;
 }
@@ -13,6 +23,7 @@ const OptionSchema: Schema<IOption> = new Schema(
   {
     name: {
       type: String,
+      enum: Object.values(OptionName),
       required: true,
     },
     value: {
@@ -35,5 +46,4 @@ const OptionSchema: Schema<IOption> = new Schema(
 const Option = mongoose.model<IOption>('Option', OptionSchema);
 
 // Export the Option model
-
 export default Option;

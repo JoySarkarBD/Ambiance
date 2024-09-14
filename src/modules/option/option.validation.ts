@@ -2,12 +2,23 @@ import { NextFunction, Request, Response } from 'express';
 import { z } from 'zod';
 import zodErrorHandler from '../../handlers/zod-error-handler';
 
+// Define the options name as an enum
+const OptionsNameEnum = z.enum(
+  ['site-url', 'site-title', 'privacy-policy', 'contact', 'email', 'terms-conditions'],
+  {
+    // Custom error message for invalid platform names
+    errorMap: () => ({
+      message: 'Please select a valid option name',
+    }),
+  }
+);
+
 /**
  * Zod schema for validating option data.
  */
 const zodOptionSchema = z
   .object({
-    name: z.string().min(1, 'Name is required').trim(),
+    name: OptionsNameEnum,
     value: z.string().min(1, 'Value is required').trim(),
   })
   .strict();
