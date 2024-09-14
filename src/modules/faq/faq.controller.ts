@@ -77,6 +77,7 @@ export const getFaqById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to get the faq by ID and get the result
   const result = await faqServices.getFaqById(id);
+  if (result === null) throw new Error('Faq not found');
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Faq retrieved successfully', result);
 });

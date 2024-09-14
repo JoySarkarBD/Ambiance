@@ -93,10 +93,10 @@ export const createService = catchAsync(async (req: Request, res: Response) => {
 
   // Validate required fields:
   if (!banner) {
-    return ServerResponse(res, false, 400, 'Missing required field: banner');
+    throw new Error('Missing required field: banner');
   }
   if (!thumbnail) {
-    return ServerResponse(res, false, 400, 'Missing required field: thumbnail');
+    throw new Error('Missing required field: thumbnail');
   }
 
   // Save banner
@@ -138,8 +138,9 @@ export const updateService = catchAsync(async (req: Request, res: Response) => {
 
   // Find the existing service by ID
   const service = await Service.findById(id);
+
   if (!service) {
-    return ServerResponse(res, false, 404, 'Service not found');
+    throw new Error('Service not found');
   }
 
   // Get banner, thumbnail and images from the request
@@ -196,8 +197,9 @@ export const deleteService = catchAsync(async (req: Request, res: Response) => {
 
   // Find the service by ID to get the associated file paths
   const service = await Service.findById(id);
+
   if (!service) {
-    return ServerResponse(res, false, 404, 'Service not found');
+    throw new Error('Service not found');
   }
 
   // Call the service method to delete the service by ID
@@ -228,11 +230,13 @@ export const deleteManyService = catchAsync(async (req: Request, res: Response) 
   const { ids }: { ids: string[] } = req.body;
 
   if (!Array.isArray(ids) || ids.length === 0) {
-    return ServerResponse(res, false, 400, 'No service IDs provided');
+    throw new Error('No service IDs provided');
   }
 
   // Find all services by IDs to get their associated file paths
   const services = await Service.find({ _id: { $in: ids } });
+
+  if (services === null) throw new Error('Services not found');
 
   // Delete each service and associated files
   await Promise.all(
@@ -267,6 +271,9 @@ export const getServiceById = catchAsync(async (req: Request, res: Response) => 
   const { id } = req.params;
   // Call the service method to get the service by ID and get the result
   const result = await serviceServices.getServiceById(id);
+
+  if (result === null) throw new Error('Service not found');
+
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Service retrieved successfully', result);
 });
@@ -311,4 +318,3 @@ export const getAllService = catchAsync(async (req: Request, res: Response) => {
     return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
   }
 });
-

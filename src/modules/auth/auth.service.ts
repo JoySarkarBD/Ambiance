@@ -30,7 +30,16 @@ const login = async (res: Response, data: { email: string; password: string }) =
   }
 
   // Generate JWT token
-  const token = await EncodeToken(email, user._id, user.role);
+  const token = await EncodeToken(
+    user.first_name as string,
+    user.last_name as string,
+    user.email as string,
+    user.bio as string,
+    user.designation as string,
+    user.avatar as string,
+    user._id as string,
+    user.role as string
+  );
 
   // Set token in response header
   res.set('authorization', `Bearer ${token}`);
@@ -55,6 +64,9 @@ const login = async (res: Response, data: { email: string; password: string }) =
       last_name: user.last_name,
       email: user.email,
       role: user.role,
+      bio: user.bio,
+      designation: user.designation,
+      avatar: user.avatar,
     },
   };
 };
@@ -173,6 +185,7 @@ const resetPassword = async (token: string, new_password: string) => {
 const updatePassword = async (req: Request, previous_password: string, new_password: string) => {
   // Find the user by ID from the request object
   const user = await User.findById(req.user?._id);
+
   if (!user) {
     throw new Error('User not found');
   }

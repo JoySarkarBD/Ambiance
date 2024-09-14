@@ -8,7 +8,6 @@ import ProjectModel, { IProject } from './project.model';
  * @returns {Promise<IProject>} - The created project.
  */
 const createProject = async (data: Partial<IProject>): Promise<IProject> => {
-  console.log(data);
   const newProject = new ProjectModel(data);
   return await newProject.save();
 };

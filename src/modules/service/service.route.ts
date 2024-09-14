@@ -24,6 +24,8 @@ import {
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/service/get-all-service
  * @description Get multiple service
@@ -31,6 +33,22 @@ const router = Router();
  * @param {function} controller - ['getAllService']
  */
 router.get('/get-all-service', getAllService);
+
+/**
+ * @route GET /api/v1/service/get-service/many
+ * @description Get multiple service
+ * @access Admin
+ * @param {function} controller - ['getAllService']
+ * @param {function} validation - ['validateSearchQuery']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
+ */
+router.get(
+  '/get-service/many',
+  isAuthorized,
+  isAllowed(['admin']),
+  validateSearchQuery,
+  getAllService
+);
 
 /**
  * @route GET /api/v1/service/get-service/:id
@@ -50,7 +68,6 @@ router.get('/get-service/:id', validateId, getServiceById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/service/create-service
  * @description Create a new service
@@ -100,16 +117,5 @@ router.delete('/delete-service/many', isAllowed(['admin']), validateIds, deleteM
  */
 router.delete('/delete-service/:id', isAllowed(['admin']), validateId, deleteService);
 
-/**
- * @route GET /api/v1/service/get-service/many
- * @description Get multiple service
- * @access Admin
- * @param {function} controller - ['getAllService']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get('/get-service/many', isAllowed(['admin']), validateSearchQuery, getAllService);
-
 // Export the router
 module.exports = router;
-

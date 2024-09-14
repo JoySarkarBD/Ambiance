@@ -20,6 +20,8 @@ import { validateFaq } from './faq.validation';
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/faq/get-all-faq
  * @description Get all faq
@@ -46,7 +48,6 @@ router.get('/get-faq/:id', validateId, getFaqById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/faq/create-faq
  * @description Create a new faq
@@ -92,4 +93,3 @@ router.delete('/delete-faq/:id', isAllowed(['admin']), validateId, deleteFaq);
 
 // Export the router
 module.exports = router;
-

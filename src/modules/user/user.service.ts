@@ -21,7 +21,16 @@ const updateUser = async (res: Response, id: string, data: object) => {
   }
 
   // Generate JWT token
-  const token = await EncodeToken(user.email, user._id, user.role);
+  const token = await EncodeToken(
+    user.first_name as string,
+    user.last_name as string,
+    user.email as string,
+    user.bio as string,
+    user.designation as string,
+    user.avatar as string,
+    user._id as string,
+    user.role as string
+  );
 
   // Set token in response header
   res.set('authorization', `Bearer ${token}`);
@@ -46,6 +55,9 @@ const updateUser = async (res: Response, id: string, data: object) => {
       last_name: user.last_name,
       email: user.email,
       role: user.role,
+      bio: user.bio,
+      designation: user.designation,
+      avatar: user.avatar,
     },
   };
 };

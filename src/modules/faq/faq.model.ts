@@ -2,6 +2,7 @@ import mongoose, { Document, Schema } from 'mongoose';
 
 // Define an interface representing a Faq document
 export interface IFaq extends Document {
+  data: null;
   _id: string;
   title: string;
   description: string;

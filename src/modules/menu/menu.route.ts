@@ -20,6 +20,8 @@ import { validateMenu, validateSearchQuery } from './menu.validation';
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/menu/get-all-menu
  * @description Get multiple menu
@@ -27,6 +29,15 @@ const router = Router();
  * @param {function} controller - ['getAllMenu']
  */
 router.get('/get-all-menu', getAllMenu);
+
+/**
+ * @route GET /api/v1/menu/get-menu/many
+ * @description Get multiple menu
+ * @access Admin
+ * @param {function} controller - ['getAllMenu']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
+ */
+router.get('/get-menu/many', isAuthorized, isAllowed(['admin']), validateSearchQuery, getAllMenu);
 
 /**
  * @route GET /api/v1/menu/get-menu/:id
@@ -46,7 +57,6 @@ router.get('/get-menu/:id', validateId, getMenuById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/menu/create-menu
  * @description Create a new menu
@@ -88,15 +98,6 @@ router.delete('/delete-menu/many', isAllowed(['admin']), validateIds, deleteMany
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.delete('/delete-menu/:id', isAllowed(['admin']), validateId, deleteMenu);
-
-/**
- * @route GET /api/v1/menu/get-menu/many
- * @description Get multiple menu
- * @access Admin
- * @param {function} controller - ['getAllMenu']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get('/get-menu/many', isAllowed(['admin']), validateSearchQuery, getAllMenu);
 
 // Export the router
 

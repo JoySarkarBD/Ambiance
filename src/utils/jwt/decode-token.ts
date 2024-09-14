@@ -5,11 +5,9 @@ import config from '../../config/config';
  * Verifies a JWT token using a secret key.
  *
  * @param token - The JWT token to verify.
- * @returns {Promise<{ email: string; userId: string; role: string } | null>} - The decoded token payload if valid, null if verification fails.
+ * @returns {Promise<JwtPayload | null>} - The decoded token payload if valid, null if verification fails.
  */
-const DecodeToken = async (
-  token: string
-): Promise<{ email: string; userId: string; role: string } | null> => {
+const DecodeToken = async (token: string): Promise<JwtPayload | null> => {
   try {
     const KEY: string = config.JWT_SECRET;
     const decoded = jwt.verify(token, KEY) as JwtPayload;
@@ -19,14 +17,14 @@ const DecodeToken = async (
       decoded &&
       typeof decoded === 'object' &&
       'email' in decoded &&
-      'user_id' in decoded &&
-      'role' in decoded
+      'userId' in decoded &&
+      'first_name' in decoded &&
+      'last_name' in decoded &&
+      'bio' in decoded &&
+      'designation' in decoded &&
+      'avatar' in decoded
     ) {
-      return {
-        email: decoded.email as string,
-        userId: decoded.user_id as string,
-        role: decoded.role as string,
-      };
+      return decoded;
     }
     return null;
   } catch (error) {

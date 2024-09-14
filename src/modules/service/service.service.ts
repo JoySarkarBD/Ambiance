@@ -34,19 +34,6 @@ const updateService = async (id: string, data: object) => {
 };
 
 /**
- * Service function to update multiple service.
- *
- * @param data - An array of data to update multiple service.
- * @returns {Promise<Service[]>} - The updated service.
- */
-const updateManyService = async (data: { id: string; updates: object }[]) => {
-  const updatePromises = data.map(({ id, updates }) =>
-    ServiceModel.findByIdAndUpdate(id, updates, { new: true })
-  );
-  return await Promise.all(updatePromises);
-};
-
-/**
  * Service function to delete a single service by ID.
  *
  * @param id - The ID of the service to delete.
@@ -115,7 +102,6 @@ export const serviceServices = {
   createService,
   createManyService,
   updateService,
-  updateManyService,
   deleteService,
   deleteManyService,
   getServiceById,

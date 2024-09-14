@@ -48,8 +48,9 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 
   // Find the existing user by ID
   const user = await User.findById(id);
+
   if (!user) {
-    return ServerResponse(res, false, 404, 'User not found');
+    throw new Error('User not found');
   }
 
   const avatar = req.files?.avatar as UploadedFile | undefined;

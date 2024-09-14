@@ -47,7 +47,10 @@ export const updateSocial = catchAsync(async (req: Request, res: Response) => {
 export const deleteSocial = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to delete the social by ID
-  await socialServices.deleteSocial(id);
+  const result = await socialServices.deleteSocial(id);
+
+  if (result === null) throw new Error('Social not found');
+
   // Send a success response confirming the deletion
   ServerResponse(res, true, 200, 'Social deleted successfully');
 });
@@ -77,6 +80,9 @@ export const getSocialById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to get the social by ID and get the result
   const result = await socialServices.getSocialById(id);
+
+  if (result === null) throw new Error('Social not found');
+
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Social retrieved successfully', result);
 });
@@ -108,9 +114,7 @@ export const getSocialByName = catchAsync(async (req: Request, res: Response) =>
   const result = await socialServices.getSocialByName(req.params.name);
 
   // If social is not found, return a 404 error response
-  if (!result) {
-    return ServerResponse(res, false, 404, 'Social not found');
-  }
+  if (result === null) throw new Error('Social not found');
 
   // Send a success response with the retrieved social data
   ServerResponse(res, true, 200, 'Social retrieved successfully', result);

@@ -47,14 +47,11 @@ export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response)
  * @returns {void}
  */
 export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
-  const { token, new_password } = req.body;
-
-  if (!token || !new_password) {
-    return ServerResponse(res, false, 400, 'Token and new password are required');
-  }
+  const { new_password } = req.body;
+  const { token } = req.query;
 
   // Call the service to reset the user's password using the token
-  await authServices.resetPassword(token, new_password);
+  await authServices.resetPassword(token as string, new_password);
 
   ServerResponse(res, true, 200, 'Password reset successfully');
 });
@@ -71,5 +68,6 @@ export const updatePassword = catchAsync(async (req: Request, res: Response) => 
 
   // Call the service to update the user old password
   await authServices.updatePassword(req, previous_password, new_password);
+
   ServerResponse(res, true, 200, 'Password update successfully');
 });

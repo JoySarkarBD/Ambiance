@@ -92,7 +92,7 @@ export const createPost = catchAsync(async (req: Request, res: Response) => {
 
   // Validate required fields
   if (!banner) {
-    return ServerResponse(res, false, 400, 'Missing required field: banner');
+    throw new Error('Missing required field: banner');
   }
 
   // Save banner
@@ -131,7 +131,7 @@ export const updatePost = catchAsync(async (req: Request, res: Response) => {
   // Find the existing post by ID
   const post = await Post.findById(id);
   if (!post) {
-    return ServerResponse(res, false, 404, 'Post not found');
+    throw new Error('Post not found');
   }
 
   // Get banner and images from the request
@@ -179,7 +179,7 @@ export const deletePost = catchAsync(async (req: Request, res: Response) => {
   // Find the post by ID to get the associated file paths
   const post = await Post.findById(id);
   if (!post) {
-    return ServerResponse(res, false, 404, 'Post not found');
+    throw new Error('Post not found');
   }
 
   // Delete the post record from the database
@@ -210,7 +210,7 @@ export const deleteManyPost = catchAsync(async (req: Request, res: Response) => 
   const { ids }: { ids: string[] } = req.body;
 
   if (!Array.isArray(ids) || ids.length === 0) {
-    return ServerResponse(res, false, 400, 'No post IDs provided');
+    throw new Error('No post IDs provided');
   }
 
   // Find all posts by IDs to get their associated file paths
@@ -249,6 +249,9 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to get the post by ID and get the result
   const result = await postServices.getPostById(id);
+
+  if (result === null) throw new Error('Post not found');
+
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Post retrieved successfully', result);
 });

@@ -121,9 +121,11 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
 export const updateProject = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   const project = await Project.findById(id);
+
   if (!project) {
-    return ServerResponse(res, false, 404, 'Project not found');
+    throw new Error('Project not found');
   }
+
   const { title, subject, skills, description, url } = req.body;
   const images = req.files?.images as UploadedFile | UploadedFile[] | undefined;
   const imagesToRemove = req.body?.imagesToRemove as string[] | undefined;
@@ -158,8 +160,9 @@ export const deleteProject = catchAsync(async (req: Request, res: Response) => {
 
   // Find the project by ID to get the associated file paths
   const project = await Project.findById(id);
+
   if (!project) {
-    return ServerResponse(res, false, 404, 'Project not found');
+    throw new Error('Project not found');
   }
 
   // Delete the project record from the database
@@ -185,7 +188,7 @@ export const deleteManyProject = catchAsync(async (req: Request, res: Response) 
   const { ids }: { ids: string[] } = req.body;
 
   if (!Array.isArray(ids) || ids.length === 0) {
-    return ServerResponse(res, false, 400, 'No project IDs provided');
+    throw new Error('No project IDs provided');
   }
 
   // Find all projects by IDs to get their associated file paths
@@ -221,6 +224,9 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
   const { id } = req.params;
   // Call the service method to get the project by ID and get the result
   const result = await projectServices.getProjectById(id);
+
+  if (result === null) throw new Error('Project not found');
+
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Project retrieved successfully', result);
 });

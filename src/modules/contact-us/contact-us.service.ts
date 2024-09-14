@@ -32,10 +32,10 @@ const createContactUs = async (data: { email: string; name: string; [key: string
 
   // Handle errors if sending emails fails
   if (!userEmailSent) {
-    console.error('Failed to send confirmation email to user');
+    throw new Error('Failed to send confirmation email to user');
   }
   if (!adminEmailSent) {
-    console.error('Failed to send email to admin');
+    throw new Error('Failed to send email to admin');
   }
 
   return "We received your mail, we'll contact with you soon.";
@@ -44,4 +44,3 @@ const createContactUs = async (data: { email: string; name: string; [key: string
 export const contactUsServices = {
   createContactUs,
 };
-

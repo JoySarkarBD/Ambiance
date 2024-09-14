@@ -24,6 +24,8 @@ import {
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/project/get-all-project
  * @description Get multiple post
@@ -31,6 +33,22 @@ const router = Router();
  * @param {function} controller - ['getProject']
  */
 router.get('/get-all-project', getProject);
+
+/**
+ * @route GET /api/v1/project/get-project/many
+ * @description Get multiple project
+ * @access Admin
+ * @param {function} controller - ['getProject']
+ * @param {function} validation - ['validateSearchQuery']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
+ */
+router.get(
+  '/get-project/many',
+  isAuthorized,
+  isAllowed(['admin']),
+  validateSearchQuery,
+  getProject
+);
 
 /**
  * @route GET /api/v1/project/get-project/:id
@@ -50,7 +68,6 @@ router.get('/get-project/:id', validateId, getProjectById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/project/create-project
  * @description Create a new project
@@ -99,16 +116,6 @@ router.delete('/delete-project/many', isAllowed(['admin']), validateIds, deleteM
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.delete('/delete-project/:id', isAllowed(['admin']), validateId, deleteProject);
-
-/**
- * @route GET /api/v1/project/get-project/many
- * @description Get multiple project
- * @access Admin
- * @param {function} controller - ['getProject']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get('/get-project/many', isAllowed(['admin']), validateSearchQuery, getProject);
 
 // Export the router
 module.exports = router;

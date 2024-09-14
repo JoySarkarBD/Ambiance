@@ -20,6 +20,8 @@ import { validateOption, validateOptionName } from './option.validation';
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/option/get-all-option
  * @description Get multiple option
@@ -46,7 +48,6 @@ router.get('/get-option/:name', validateOptionName, getOptionByName);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/option/create-option
  * @description Create a new option
@@ -90,5 +91,4 @@ router.delete('/delete-option/many', isAllowed(['admin']), validateIds, deleteMa
 router.delete('/delete-option/:id', isAllowed(['admin']), validateId, deleteOption);
 
 // Export the router
-
 module.exports = router;

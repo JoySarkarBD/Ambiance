@@ -77,6 +77,9 @@ export const getOptionByName = catchAsync(async (req: Request, res: Response) =>
   const { name } = req.params;
   // Call the service method to get the option by name and get the result
   const result = await optionServices.getOptionByName(name);
+
+  if (result === null) throw new Error('Option not found');
+
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Option retrieved successfully', result);
 });

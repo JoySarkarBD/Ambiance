@@ -21,6 +21,8 @@ import { validateSocial, validateSocialName } from './social.validation';
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/social/get-all-social/many
  * @description Get all social
@@ -28,6 +30,16 @@ const router = Router();
  * @param {function} controller - ['getAllSocial']
  */
 router.get('/get-all-social', getAllSocial);
+
+/**
+ * @route GET /api/v1/social/get-social-details/:name
+ * @description Get a social by name
+ * @param {string} name - The name of the social to retrieve
+ * @access Admin
+ * @param {function} controller - ['getSocialByName']
+ * @param {function} validation - ['validateSocialName']
+ */
+router.get('/get-social-details/:name', validateSocialName, getSocialByName);
 
 /**
  * @route GET /api/v1/social/get-social/:id
@@ -47,7 +59,6 @@ router.get('/get-social/:id', validateId, getSocialById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/social/create-social
  * @description Create a new social
@@ -89,16 +100,6 @@ router.delete('/delete-social/many', isAllowed(['admin']), validateIds, deleteMa
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.delete('/delete-social/:id', isAllowed(['admin']), validateId, deleteSocial);
-
-/**
- * @route GET /api/v1/social/get-social-details/:name
- * @description Get a social by name
- * @param {string} name - The name of the social to retrieve
- * @access Admin
- * @param {function} controller - ['getSocialByName']
- * @param {function} validation - ['validateSocialName']
- */
-router.get('/get-social-details/:name', validateSocialName, getSocialByName);
 
 // Export the router
 module.exports = router;

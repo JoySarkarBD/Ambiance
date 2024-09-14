@@ -20,6 +20,8 @@ import { validateImageRemovePath, validatePost, validateSearchQuery } from './po
 // Initialize router
 const router = Router();
 
+// Define route handlers
+
 /**
  * @route GET /api/v1/post/get-all-post
  * @description Get multiple post
@@ -27,6 +29,16 @@ const router = Router();
  * @param {function} controller - ['getAllPost']
  */
 router.get('/get-all-post', getAllPost);
+
+/**
+ * @route GET /api/v1/post/get-post/many
+ * @description Get multiple post
+ * @access Admin
+ * @param {function} controller - ['getAllPost']
+ * @param {function} validation - ['validateSearchQuery']
+ * @param {function} middlewares - ['isAuthorized', 'isAllowed']
+ */
+router.get('/get-post/many', isAuthorized, isAllowed(['admin']), validateSearchQuery, getAllPost);
 
 /**
  * @route GET /api/v1/post/get-post/:id
@@ -46,7 +58,6 @@ router.get('/get-post/:id', validateId, getPostById);
  */
 router.use(isAuthorized);
 
-// Define route handlers
 /**
  * @route POST /api/v1/post/create-post
  * @description Create a new post
@@ -95,16 +106,6 @@ router.delete('/delete-post/many', isAllowed(['admin']), validateIds, deleteMany
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.delete('/delete-post/:id', isAllowed(['admin']), validateId, deletePost);
-
-/**
- * @route GET /api/v1/post/get-post/many
- * @description Get multiple post
- * @access Admin
- * @param {function} controller - ['getAllPost']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get('/get-post/many', isAllowed(['admin']), validateSearchQuery, getAllPost);
 
 // Export the router
 module.exports = router;
