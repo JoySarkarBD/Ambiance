@@ -91,7 +91,7 @@ router.delete('/delete-social/many', isAllowed(['admin']), validateIds, deleteMa
 router.delete('/delete-social/:id', isAllowed(['admin']), validateId, deleteSocial);
 
 /**
- * @route GET /api/v1/social/get-social/:name
+ * @route GET /api/v1/social/get-social-details/:name
  * @description Get a social by ID
  * @param {string} id - The name of the social to retrieve
  * @access Admin
