@@ -18,6 +18,9 @@ const createOption = async (data: Partial<IOption>): Promise<IOption> => {
 
   // Create and save the new option
   const newOption = new OptionModel(data);
+
+  if (!newOption) throw new Error('Failed to create option');
+
   return await newOption.save();
 };
 
