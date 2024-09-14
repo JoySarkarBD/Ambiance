@@ -79,3 +79,17 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
   ServerResponse(res, true, 200, 'User updated successfully', result);
 });
 
+/**
+ * Controller function to handle the retrieval of user information.
+ *
+ * @param {Request} req - The request object containing the ID of the user in URL parameters.
+ * @param {Response} res - The response object used to send the response.
+ * @returns {void}
+ */
+export const aboutUser = catchAsync(async (req: Request, res: Response) => {
+  // Call the service method to get the user information
+  const result = await userServices.aboutUser();
+
+  // Send a success response with the user information
+  ServerResponse(res, true, 200, 'User retrieved successfully', result);
+});

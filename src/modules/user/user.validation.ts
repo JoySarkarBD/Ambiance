@@ -10,6 +10,8 @@ const zodUserSchema = z
     first_name: z.string().min(1, 'First name is required').trim(),
     last_name: z.string().min(1, 'Last name is required').trim(),
     email: z.string().email('Invalid email address').min(1, 'Email is required').trim(),
+    bio: z.string().min(1, 'Bio is required').trim().optional(),
+    designation: z.string().min(1, 'Designation is required').optional(),
   })
   .strict();
 
@@ -33,4 +35,3 @@ export const validateUser = (req: Request, res: Response, next: NextFunction) =>
   // If validation passed, proceed to the next middleware function
   return next();
 };
-

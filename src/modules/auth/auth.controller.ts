@@ -24,11 +24,7 @@ export const loginAuth = catchAsync(async (req: Request, res: Response) => {
  */
 export const registerAdmin = catchAsync(async (req: Request, res: Response) => {
   const newAdmin = await authServices.registerAdmin(req.body);
-  const message =
-    newAdmin.status === 'active'
-      ? 'Admin registered successfully'
-      : 'Admin registered successfully and an email has been sent to your mail to activate your account';
-  ServerResponse(res, true, 201, message, newAdmin);
+  ServerResponse(res, true, 201, 'Admin registered successfully', newAdmin);
 });
 
 /**

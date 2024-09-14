@@ -50,7 +50,92 @@ const updateUser = async (res: Response, id: string, data: object) => {
   };
 };
 
-export const userServices = {
-  updateUser,
+/**
+ * Service function to get a single user and their gallery images using aggregation.
+ *
+ * @returns {Promise<object>} - The user with their gallery images as an array of strings.
+ */
+const aboutUser = async () => {
+  // Stage 1: Match the user based on the criteria
+  const matchStage = {
+    $match: { showData: true },
+  };
+
+  // Stage 2: Lookup the gallery images from the Project collection
+  const lookupStage = {
+    $lookup: {
+      from: 'projects', // The collection name for projects
+      localField: '_id',
+      foreignField: 'created_by',
+      as: 'gallery',
+    },
+  };
+
+  // Stage 3: Unwind the gallery array to work with individual project documents
+  const unwindGalleryStage = {
+    $unwind: {
+      path: '$gallery',
+      preserveNullAndEmptyArrays: true, // In case user has no gallery
+    },
+  };
+
+  // Stage 4: Project the user fields and flatten the images
+  const projectStage = {
+    $project: {
+      bio: 1,
+      designation: 1,
+      first_name: 1,
+      last_name: 1,
+      email: 1,
+      avatar: 1,
+      status: 1,
+      role: 1,
+      gallery: '$gallery.images',
+    },
+  };
+
+  // Stage 5: Unwind the gallery images array to flatten it
+  const unwindImagesStage = {
+    $unwind: {
+      path: '$gallery',
+      preserveNullAndEmptyArrays: true, // Ensure users without images don't break the pipeline
+    },
+  };
+
+  // Stage 6: Group to merge gallery images into a single array
+  const groupStage = {
+    $group: {
+      _id: '$_id',
+      bio: { $first: '$bio' },
+      designation: { $first: '$designation' },
+      first_name: { $first: '$first_name' },
+      last_name: { $first: '$last_name' },
+      email: { $first: '$email' },
+      avatar: { $first: '$avatar' },
+      status: { $first: '$status' },
+      role: { $first: '$role' },
+      gallery: { $push: '$gallery' },
+    },
+  };
+
+  // Aggregation pipeline using the separated stages
+  const user = await UserModel.aggregate([
+    matchStage,
+    lookupStage,
+    unwindGalleryStage,
+    projectStage,
+    unwindImagesStage,
+    groupStage,
+  ]);
+
+  if (!user || user.length === 0) {
+    throw new Error('User not found');
+  }
+
+  return user[0];
 };
 
+export const userServices = {
+  updateUser,
+  aboutUser,
+};

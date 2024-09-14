@@ -6,9 +6,12 @@ interface IUser extends Document {
   first_name: string;
   last_name: string;
   email: string;
+  bio?: string;
+  designation?: string;
   password: string;
   avatar?: string;
   status?: 'active' | 'inactive';
+  showData: boolean;
   role: 'admin' | 'user';
   activationToken?: string;
   resetPasswordToken?: string;
@@ -31,6 +34,14 @@ const UserSchema: Schema<IUser> = new Schema(
       required: true,
       unique: true,
     },
+    bio: {
+      type: String,
+      default: '',
+    },
+    designation: {
+      type: String,
+      default: '',
+    },
     password: {
       type: String,
       required: true,
@@ -43,6 +54,10 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       enum: ['active', 'inactive'],
       default: 'inactive',
+    },
+    showData: {
+      type: Boolean,
+      default: false,
     },
     role: {
       type: String,

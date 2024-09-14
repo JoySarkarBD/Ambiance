@@ -73,11 +73,10 @@ const registerAdmin = async (data: {
 }) => {
   const { first_name, last_name, email, password } = data;
 
-  // Check if an admin already exists or if the email is taken
-  const existingAdmin = (await User.findOne({ role: 'admin' })) || (await User.findOne({ email }));
+  // Check if an admin already exists
+  const existingAdmin = await User.findOne({ role: 'admin' });
   if (existingAdmin) {
-    if (existingAdmin.email === email) throw new Error('Admin with this email already exists.');
-    // If an admin exists but with a different email, assume it can be an existing admin or another role
+    if (existingAdmin.email === email) throw new Error('Admin already exists.');
   }
 
   // Hash the password and create the admin
@@ -89,6 +88,7 @@ const registerAdmin = async (data: {
     password: hashedPassword,
     role: 'admin',
     status: 'active',
+    showData: true,
   });
 
   await newAdmin.save();
