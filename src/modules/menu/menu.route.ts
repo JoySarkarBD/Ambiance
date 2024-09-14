@@ -25,9 +25,8 @@ const router = Router();
  * @description Get multiple menu
  * @access Public
  * @param {function} controller - ['getAllMenu']
- * @param {function} validation - ['validateIds']
  */
-router.get('/get-all-menu', validateIds, getAllMenu);
+router.get('/get-all-menu', getAllMenu);
 
 /**
  * @route GET /api/v1/menu/get-menu/:id
@@ -95,7 +94,6 @@ router.delete('/delete-menu/:id', isAllowed(['admin']), validateId, deleteMenu);
  * @description Get multiple menu
  * @access Admin
  * @param {function} controller - ['getAllMenu']
- * @param {function} validation - ['validateIds']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.get('/get-menu/many', isAllowed(['admin']), validateSearchQuery, getAllMenu);
@@ -103,4 +101,3 @@ router.get('/get-menu/many', isAllowed(['admin']), validateSearchQuery, getAllMe
 // Export the router
 
 module.exports = router;
-

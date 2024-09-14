@@ -25,7 +25,6 @@ const router = Router();
  * @description Get multiple option
  * @access Public
  * @param {function} controller - ['getAllOption']
- * @param {function} validation - ['validateIds']
  */
 router.get('/get-all-option', getAllOption);
 

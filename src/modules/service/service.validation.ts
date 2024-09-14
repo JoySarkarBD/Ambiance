@@ -9,12 +9,8 @@ const zodServiceSchema = z
   .object({
     title: z.string().min(1, 'Title is required').trim(),
     description: z.string().min(1, 'Description is required').trim(),
-    reviews: z.number().min(0, 'Reviews must be a non-negative number').default(0),
-    rating: z
-      .number()
-      .min(0, 'Rating cannot be less than 0')
-      .max(5, 'Rating cannot exceed 5')
-      .default(0),
+    reviews: z.string().transform((val) => Number(val)),
+    rating: z.string().transform((val) => Number(val)),
     imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
     searchKey: z.string(),
     showPerPage: z
