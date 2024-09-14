@@ -13,7 +13,7 @@ import { validateUser } from './user.validation';
 const router = Router();
 
 /**
- * @route Get /api/v1/user/update-user/:id
+ * @route Get /api/v1/user/about-user
  * @description About user information
  * @access Public
  * @param {function} controller - ['aboutUser']
