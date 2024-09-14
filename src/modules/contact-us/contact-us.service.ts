@@ -38,7 +38,7 @@ const createContactUs = async (data: { email: string; name: string; [key: string
     console.error('Failed to send email to admin');
   }
 
-  return "We received your mail, we'll contact you soon.";
+  return "We received your mail, we'll contact with you soon.";
 };
 
 export const contactUsServices = {
