@@ -57,7 +57,7 @@ export const validateSocial = (req: Request, res: Response, next: NextFunction) 
 };
 
 /**
- * Middleware function to validate social using Zod schema.
+ * Middleware function to validate social name using Zod schema.
  * @param {object} req - The request object.
  * @param {object} res - The response object.
  * @param {function} next - The next middleware function.
