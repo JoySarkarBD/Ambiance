@@ -45,7 +45,7 @@ export const validateOption = (req: Request, res: Response, next: NextFunction) 
 export const validateOptionName = (req: Request, res: Response, next: NextFunction) => {
   // Validate request body
   const { error, success } = zodOptionSchema.pick({ name: true }).safeParse({
-    name: req.body.name,
+    name: req.params.name,
   });
 
   // Check if validation was successful
@@ -57,4 +57,3 @@ export const validateOptionName = (req: Request, res: Response, next: NextFuncti
   // If validation passed, proceed to the next middleware function
   return next();
 };
-
