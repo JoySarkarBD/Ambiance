@@ -91,7 +91,7 @@ export const aboutUser = catchAsync(async (req: Request, res: Response) => {
   const result = await userServices.aboutUser();
 
   // Send a success response with the user information
-  ServerResponse(res, true, 200, 'User retrieved successfully', result);
+  ServerResponse(res, true, 200, 'About user details retrieved successfully', result);
 });
 
 /**

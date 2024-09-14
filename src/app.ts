@@ -69,25 +69,28 @@ const loadRoutes = (basePath: string, baseRoute: string) => {
         // Dynamically load the route file
         const routeModule = require(itemPath);
 
-        const end = performance.now();
-        const loadTime = end - start;
+        // Log routes in development mode
+        if (config.NODE_ENV === 'development') {
+          const end = performance.now();
+          const loadTime = end - start;
 
-        if (routeModule) {
-          // Capture route paths and methods
-          routeModule.stack.forEach((layer: any) => {
-            if (layer.route) {
-              const methods = Object.keys(layer.route.methods).map((method) =>
-                method.toUpperCase()
-              );
-              methods.forEach((method) => {
-                routes.push({
-                  path: `${baseRoute}${layer.route.path}`,
-                  method,
-                  time: loadTime,
+          if (routeModule) {
+            // Capture route paths and methods
+            routeModule.stack.forEach((layer: any) => {
+              if (layer.route) {
+                const methods = Object.keys(layer.route.methods).map((method) =>
+                  method.toUpperCase()
+                );
+                methods.forEach((method) => {
+                  routes.push({
+                    path: `${baseRoute}${layer.route.path}`,
+                    method,
+                    time: loadTime,
+                  });
                 });
-              });
-            }
-          });
+              }
+            });
+          }
         }
       }
     });
