@@ -50,7 +50,7 @@ router.use(isAuthorized);
 /**
  * @route POST /api/v1/option/create-option
  * @description Create a new option
- * @access Public
+ * @access Admin
  * @param {function} controller - ['createOption']
  * @param {function} validation - ['validateOption']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -61,7 +61,7 @@ router.post('/create-option', isAllowed(['admin']), validateOption, createOption
  * @route PUT /api/v1/option/update-option/:id
  * @description Update option information
  * @param {string} id - The ID of the option to update
- * @access Public
+ * @access Admin
  * @param {function} controller - ['updateOption']
  * @param {function} validation - ['validateId', 'validateOption']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -71,7 +71,7 @@ router.put('/update-option/:id', isAllowed(['admin']), validateId, validateOptio
 /**
  * @route DELETE /api/v1/option/delete-option/many
  * @description Delete multiple option
- * @access Public
+ * @access Admin
  * @param {function} controller - ['deleteManyOption']
  * @param {function} validation - ['validateIds']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
@@ -82,7 +82,7 @@ router.delete('/delete-option/many', isAllowed(['admin']), validateIds, deleteMa
  * @route DELETE /api/v1/option/delete-option/:id
  * @description Delete a option
  * @param {string} id - The ID of the option to delete
- * @access Public
+ * @access Admin
  * @param {function} controller - ['deleteOption']
  * @param {function} validation - ['validateId']
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
