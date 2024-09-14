@@ -112,7 +112,7 @@ const forgetPassword = async (email: string) => {
 
   // Generate a password reset token
   const resetToken = uuidv4();
-  const resetLink = `${config.BASE_URL}:${config.PORT}/api/v1/auth/reset-password?token=${resetToken}`;
+  const resetLink = `${config.NEXT_APP_URL}/reset-password?token=${resetToken}`;
 
   // Save the reset token to the user
   user.resetPasswordToken = resetToken;
