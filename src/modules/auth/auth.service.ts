@@ -123,8 +123,8 @@ const forgetPassword = async (email: string) => {
   const emailSent = await SendEmail({
     to: user.email,
     subject: 'Password Reset Request',
-    text: `Please click the following link to reset your password: ${resetLink}`,
-    html: `<p>Please click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p>`,
+    text: `Please click the following link to reset your password: ${resetLink}. This link will be valid for 1 hour.`,
+    html: `<p>Please click the following link to reset your password: <a href="${resetLink}">Reset Password</a></p><p>This link will be valid for 1 hour.</p>`,
   });
 
   if (!emailSent) {
