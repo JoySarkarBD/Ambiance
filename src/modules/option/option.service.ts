@@ -8,6 +8,16 @@ import OptionModel, { IOption } from './option.model';
  * @returns {Promise<IOption>} - The created option.
  */
 const createOption = async (data: Partial<IOption>): Promise<IOption> => {
+  const { name } = data;
+
+  // Check if an option with the same name already exists
+  const existingOption = await OptionModel.findOne({ name }).exec();
+
+  if (existingOption) {
+    throw new Error(`Option with name "${name}" already exists`);
+  }
+
+  // Create and save the new option
   const newOption = new OptionModel(data);
   return await newOption.save();
 };
