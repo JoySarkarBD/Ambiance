@@ -150,14 +150,14 @@ const forgetPassword = async (email: string) => {
 /**
  * Service function to handle password reset.
  *
- * @param token - The password reset token.
+ * @param resetPasswordToken - The password reset token.
  * @param new_password - The new password to set.
  * @returns {Promise<User>} - The updated user with the new password.
  */
-const resetPassword = async (token: string, new_password: string) => {
+const resetPassword = async (resetPasswordToken: string, new_password: string) => {
   // Find the user by reset token and check if the token is still valid
   const user = await User.findOne({
-    resetPasswordToken: token,
+    resetPasswordToken: resetPasswordToken,
     resetPasswordTokenExpires: { $gt: new Date() }, // Check if token has not expired
   });
 

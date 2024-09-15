@@ -132,7 +132,10 @@ export const validateResetPassword = (req: Request, res: Response, next: NextFun
   // Validate request body
   const { error, success } = zodAuthSchema
     .pick({ resetPasswordToken: true, new_password: true })
-    .safeParse({ token: req.query.token as string, new_password: req.body });
+    .safeParse({
+      resetPasswordToken: req.query.resetPasswordToken as string,
+      new_password: req.body,
+    });
 
   // Check if validation was successful
   if (!success) {

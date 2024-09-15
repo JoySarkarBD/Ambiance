@@ -48,10 +48,10 @@ export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response)
  */
 export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
   const { new_password } = req.body;
-  const { token } = req.query;
+  const { resetPasswordToken } = req.query;
 
   // Call the service to reset the user's password using the token
-  await authServices.resetPassword(token as string, new_password);
+  await authServices.resetPassword(resetPasswordToken as string, new_password);
 
   ServerResponse(res, true, 200, 'Password reset successfully');
 });
