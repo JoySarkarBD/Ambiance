@@ -44,7 +44,7 @@ async function deleteFile(filePath: string): Promise<void> {
  * @returns {void}
  */
 export const updateUser = catchAsync(async (req: Request, res: Response) => {
-  const { id } = req.params;
+  const id = req.user?._id;
 
   // Find the existing user by ID
   const user = await User.findById(id);
@@ -74,7 +74,7 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
   };
 
   // Call the service method to update the user by ID and get the result
-  const result = await userServices.updateUser(res, id, updatedData);
+  const result = await userServices.updateUser(res, id as string, updatedData);
 
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'User updated successfully', result);

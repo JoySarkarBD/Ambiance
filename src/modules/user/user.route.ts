@@ -29,16 +29,14 @@ router.get('/about-user', aboutUser);
 router.use(isAuthorized);
 
 // Define route handlers
-
 /**
- * @route PUT /api/v1/user/update-user/:id
+ * @route PUT /api/v1/user/update-user
  * @description Update user information
- * @param {string} id - The ID of the user to update
  * @access Authorized
  * @param {function} controller - ['updateUser']
- * @param {function} validation - ['validateId', 'validateUser']
+ * @param {function} validation - [ 'validateUser']
  */
-router.put('/update-user/:id', validateId, validateUser, updateUser);
+router.put('/update-user', validateUser, updateUser);
 
 /**
  * @route PUT /api/v1/user/update-user-show-data/:id
