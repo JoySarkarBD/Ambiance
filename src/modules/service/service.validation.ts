@@ -17,11 +17,13 @@ const zodServiceSchema = z
       .trim(),
     reviews: z
       .string({ required_error: 'Please provide the number of reviews.' })
+      .nonempty('Reviews cannot be empty.')
       .transform((val) => Number(val))
       .refine((val) => !isNaN(val), 'Reviews must be a valid number.')
       .refine((val) => val >= 0, 'Reviews cannot be negative.'),
     rating: z
       .string({ required_error: 'Please provide the rating.' })
+      .nonempty('Rating cannot be empty.')
       .transform((val) => Number(val))
       .refine((val) => !isNaN(val), 'Rating must be a valid number.')
       .refine((val) => val >= 0 && val <= 5, 'Rating must be between 0 and 5.'),
