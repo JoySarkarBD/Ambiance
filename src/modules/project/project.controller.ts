@@ -221,44 +221,7 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
  * @returns {void}
  */
 export const getProject = catchAsync(async (req: Request, res: Response) => {
-  const { user } = req; // Assume req.user is set by authentication middleware
-  const { searchKey, showPerPage, pageNo } = req.query;
-
-  const page = parseInt(pageNo as string, 10);
-  const limit = parseInt(showPerPage as string, 10);
-  const skip = (page - 1) * limit;
-
-  if (user?.role === 'admin') {
-    const filter: any = {};
-    if (searchKey) {
-      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
-      filter.$or = [
-        { title: { $regex: regex } },
-        { url: { $regex: regex } },
-        { subject: { $regex: regex } },
-        { description: { $regex: regex } },
-        {
-          // Use $elemMatch to find if any skill matches the search key
-          skills: { $elemMatch: { $regex: regex } },
-        },
-      ];
-    }
-
-    const { data, totalCount } = await projectServices.getManyProject(filter, limit, skip);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // Send response with pagination info
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
-      projects: data,
-      totalCount,
-      totalPages,
-      currentPage: page,
-    });
-  } else {
-    // Call the service method to get all projects for non-admin users
-    const result = await projectServices.getAllProject();
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
-  }
+  // Call the service method to get all projects for non-admin users
+  const result = await projectServices.getAllProject();
+  return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

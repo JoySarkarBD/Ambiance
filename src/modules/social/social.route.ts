@@ -4,7 +4,6 @@ import { Router } from 'express';
 // Import controller from corresponding module
 import {
   createSocial,
-  deleteManySocial,
   deleteSocial,
   getAllSocial,
   getSocialById,
@@ -13,7 +12,7 @@ import {
 } from './social.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
 import { validateSocial, validateSocialName } from './social.validation';
@@ -79,16 +78,6 @@ router.post('/create-social', isAllowed(['admin']), validateSocial, createSocial
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put('/update-social/:id', isAllowed(['admin']), validateId, validateSocial, updateSocial);
-
-/**
- * @route DELETE /api/v1/social/delete-social/many
- * @description Delete multiple social
- * @access Admin
- * @param {function} controller - ['deleteManySocial']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-social/many', isAllowed(['admin']), validateIds, deleteManySocial);
 
 /**
  * @route DELETE /api/v1/social/delete-social/:id

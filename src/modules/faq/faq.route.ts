@@ -2,17 +2,10 @@
 import { Router } from 'express';
 
 // Import controller from corresponding module
-import {
-  createFaq,
-  deleteFaq,
-  deleteManyFaq,
-  getAllFaq,
-  getFaqById,
-  updateFaq,
-} from './faq.controller';
+import { createFaq, deleteFaq, getAllFaq, getFaqById, updateFaq } from './faq.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
 import { validateFaq } from './faq.validation';
@@ -69,16 +62,6 @@ router.post('/create-faq', isAllowed(['admin']), validateFaq, createFaq);
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put('/update-faq/:id', isAllowed(['admin']), validateId, validateFaq, updateFaq);
-
-/**
- * @route DELETE /api/v1/faq/delete-faq/many
- * @description Delete multiple faq
- * @access Admin
- * @param {function} controller - ['deleteManyFaq']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-faq/many', isAllowed(['admin']), validateIds, deleteManyFaq);
 
 /**
  * @route DELETE /api/v1/faq/delete-faq/:id

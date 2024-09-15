@@ -14,11 +14,7 @@ import {
 import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import {
-  validateImageRemovePath,
-  validateProject,
-  validateSearchQuery,
-} from './project.validation';
+import { validateImageRemovePath, validateProject } from './project.validation';
 
 // Initialize router
 const router = Router();
@@ -32,22 +28,6 @@ const router = Router();
  * @param {function} controller - ['getProject']
  */
 router.get('/get-all-project', getProject);
-
-/**
- * @route GET /api/v1/project/get-project/many
- * @description Get multiple project
- * @access Admin
- * @param {function} controller - ['getProject']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get(
-  '/get-project/many',
-  isAuthorized,
-  isAllowed(['admin']),
-  validateSearchQuery,
-  getProject
-);
 
 /**
  * @route GET /api/v1/project/get-project/:id

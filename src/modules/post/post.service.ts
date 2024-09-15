@@ -52,28 +52,6 @@ const getPostById = async (id: string): Promise<IPost | null> => {
 };
 
 /**
- * Service function to retrieve multiple posts based on query parameters for admins.
- *
- * @param filter - The filter criteria for posts.
- * @param limit - Number of posts per page.
- * @param skip - Number of posts to skip for pagination.
- * @returns {Promise<{ data: IPost[], totalCount: number }>} - The retrieved posts and total count.
- */
-const getManyPost = async (filter: object, limit: number, skip: number) => {
-  const data = await PostModel.find(filter)
-    .populate({
-      path: 'created_by',
-      select: 'first_name last_name avatar',
-    })
-    .limit(limit)
-    .skip(skip)
-    .exec();
-  const totalCount = await PostModel.countDocuments(filter);
-  if (!data || data.length === 0) throw new Error('No posts found');
-  return { data, totalCount };
-};
-
-/**
  * Service function to retrieve all posts for non-admin users.
  *
  * @returns {Promise<IPost[]>} - The retrieved posts.
@@ -92,6 +70,5 @@ export const postServices = {
   updatePost,
   deletePost,
   getPostById,
-  getManyPost,
   getAllPost,
 };

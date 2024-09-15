@@ -53,20 +53,6 @@ export const deleteMenu = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the deletion of multiple menu.
- *
- * @param {Request} req - The request object containing an array of IDs of menu to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyMenu = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to delete multiple menu and get the result
-  await menuServices.deleteManyMenu(req.body);
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
-});
-
-/**
  * Controller function to handle the retrieval of a single menu by ID.
  *
  * @param {Request} req - The request object containing the ID of the menu to retrieve in URL parameters.

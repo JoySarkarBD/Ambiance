@@ -55,35 +55,6 @@ const getProjectById = async (id: string): Promise<IProject | null> => {
 };
 
 /**
- * Service function to retrieve multiple projects based on query parameters.
- *
- * @param filter - The filter criteria for projects.
- * @param limit - Number of projects per page.
- * @param skip - Number of projects to skip for pagination.
- * @returns {Promise<{ data: IProject[], totalCount: number }>} - The retrieved projects and total count.
- * @throws {Error} - Throws an error if the projects retrieval fails.
- */
-const getManyProject = async (
-  filter: object,
-  limit: number,
-  skip: number
-): Promise<{ data: IProject[]; totalCount: number }> => {
-  const data = await ProjectModel.find(filter)
-    .populate({
-      path: 'created_by',
-      select: 'first_name last_name avatar',
-    })
-    .limit(limit)
-    .skip(skip)
-    .exec();
-  if (!data) throw new Error('Failed to retrieve projects');
-  const totalCount = await ProjectModel.countDocuments(filter);
-  if (totalCount === undefined) throw new Error('Failed to count projects');
-
-  return { data, totalCount };
-};
-
-/**
  * Service function to retrieve all projects for non-admin users.
  *
  * @returns {Promise<IProject[]>} - The retrieved projects.
@@ -103,6 +74,5 @@ export const projectServices = {
   updateProject,
   deleteProject,
   getProjectById,
-  getManyProject,
   getAllProject,
 };

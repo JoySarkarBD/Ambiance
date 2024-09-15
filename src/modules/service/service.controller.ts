@@ -265,35 +265,7 @@ export const getServiceById = catchAsync(async (req: Request, res: Response) => 
  * @returns {void}
  */
 export const getAllService = catchAsync(async (req: Request, res: Response) => {
-  const { user } = req; // Assume req.user is set by authentication middleware
-  const { searchKey, showPerPage, pageNo } = req.query;
-
-  const page = parseInt(pageNo as string, 10);
-  const limit = parseInt(showPerPage as string, 10);
-  const skip = (page - 1) * limit;
-
-  if (user?.role === 'admin') {
-    const filter: any = {};
-    if (searchKey) {
-      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
-      filter.$or = [{ title: { $regex: regex } }, { description: { $regex: regex } }];
-    }
-
-    const { data, totalCount } = await serviceServices.getManyService(filter, limit, skip);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // Send response with pagination info
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
-      posts: data,
-      totalCount,
-      totalPages,
-      currentPage: page,
-    });
-  } else {
-    // Call the service method to get all posts for non-admin users
-    const result = await serviceServices.getAllService();
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
-  }
+  // Call the service method to get all posts for non-admin users
+  const result = await serviceServices.getAllService();
+  return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

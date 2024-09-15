@@ -4,7 +4,6 @@ import { Router } from 'express';
 // Import controller from corresponding module
 import {
   createOption,
-  deleteManyOption,
   deleteOption,
   getAllOption,
   getOptionByName,
@@ -12,7 +11,7 @@ import {
 } from './option.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
 import { validateOption, validateOptionName } from './option.validation';
@@ -68,16 +67,6 @@ router.post('/create-option', isAllowed(['admin']), validateOption, createOption
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put('/update-option/:id', isAllowed(['admin']), validateId, validateOption, updateOption);
-
-/**
- * @route DELETE /api/v1/option/delete-option/many
- * @description Delete multiple option
- * @access Admin
- * @param {function} controller - ['deleteManyOption']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-option/many', isAllowed(['admin']), validateIds, deleteManyOption);
 
 /**
  * @route DELETE /api/v1/option/delete-option/:id

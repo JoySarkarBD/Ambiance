@@ -39,18 +39,6 @@ const deleteMenu = async (id: string): Promise<IMenu | null> => {
 };
 
 /**
- * Service function to delete multiple menus.
- *
- * @param ids - An array of IDs of menus to delete.
- * @returns {Promise<number>} - The number of deleted menus.
- */
-const deleteManyMenu = async (ids: string[]): Promise<number> => {
-  const result = await MenuModel.deleteMany({ _id: { $in: ids } });
-  if (result.deletedCount === 0) throw new Error('Failed to delete menus');
-  return result.deletedCount;
-};
-
-/**
  * Service function to retrieve a single menu by ID.
  *
  * @param id - The ID of the menu to retrieve.
@@ -111,7 +99,6 @@ export const menuServices = {
   createMenu,
   updateMenu,
   deleteMenu,
-  deleteManyMenu,
   getMenuById,
   getManyMenu,
   getAllMenu,

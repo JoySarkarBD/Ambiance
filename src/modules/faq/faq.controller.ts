@@ -52,20 +52,6 @@ export const deleteFaq = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the deletion of multiple FAQs.
- *
- * @param {Request} req - The request object containing an array of IDs of FAQs to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyFaq = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to delete multiple FAQs
-  await faqServices.deleteManyFaq(req.body.ids);
-  // Send a success response confirming the FAQs deletion
-  ServerResponse(res, true, 200, 'FAQs deleted successfully');
-});
-
-/**
  * Controller function to handle the retrieval of a single FAQ by ID.
  *
  * @param {Request} req - The request object containing the ID of the FAQ to retrieve in URL parameters.

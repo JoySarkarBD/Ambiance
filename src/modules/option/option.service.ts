@@ -50,18 +50,6 @@ const deleteOption = async (id: string): Promise<IOption | null> => {
 };
 
 /**
- * Service function to delete multiple options.
- *
- * @param ids - An array of IDs of options to delete.
- * @returns {Promise<number>} - The number of deleted options.
- */
-const deleteManyOption = async (ids: string[]): Promise<number> => {
-  const result = await OptionModel.deleteMany({ _id: { $in: ids } });
-  if (result.deletedCount === 0) throw new Error('Failed to delete options');
-  return result.deletedCount;
-};
-
-/**
  * Service function to retrieve a single option by name.
  *
  * @param name - The name of the option to retrieve.
@@ -94,7 +82,6 @@ export const optionServices = {
   createOption,
   updateOption,
   deleteOption,
-  deleteManyOption,
   getOptionByName,
   getAllOption,
 };

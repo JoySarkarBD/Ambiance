@@ -55,37 +55,6 @@ const getServiceById = async (id: string): Promise<IService | null> => {
 };
 
 /**
- * Service function to retrieve multiple services based on query parameters.
- *
- * @param filter - The filter criteria for services.
- * @param limit - Number of services per page.
- * @param skip - Number of services to skip for pagination.
- * @returns {Promise<{ data: IService[], totalCount: number }>} - The retrieved services and total count.
- * @throws {Error} - Throws an error if the services retrieval fails.
- */
-const getManyService = async (
-  filter: object,
-  limit: number,
-  skip: number
-): Promise<{ data: IService[]; totalCount: number }> => {
-  const data = await ServiceModel.find(filter)
-    .populate({
-      path: 'created_by',
-      select: 'first_name last_name avatar',
-    })
-    .limit(limit)
-    .skip(skip)
-    .exec();
-
-  if (!data) throw new Error('Failed to retrieve services');
-
-  const totalCount = await ServiceModel.countDocuments(filter);
-  if (totalCount === undefined) throw new Error('Failed to retrieve total count of services');
-
-  return { data, totalCount };
-};
-
-/**
  * Service function to retrieve all services for non-admin users.
  *
  * @returns {Promise<IService[]>} - The retrieved services.
@@ -102,6 +71,5 @@ export const serviceServices = {
   updateService,
   deleteService,
   getServiceById,
-  getManyService,
   getAllService,
 };
