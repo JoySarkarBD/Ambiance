@@ -134,7 +134,7 @@ export const validateResetPassword = (req: Request, res: Response, next: NextFun
     .pick({ resetPasswordToken: true, new_password: true })
     .safeParse({
       resetPasswordToken: req.query.resetPasswordToken as string,
-      new_password: req.body,
+      new_password: req.body.new_password,
     });
 
   // Check if validation was successful
