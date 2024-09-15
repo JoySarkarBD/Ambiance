@@ -108,7 +108,10 @@ const getManyService = async (
  * @throws {Error} - Throws an error if the services retrieval fails.
  */
 const getAllService = async (): Promise<IService[]> => {
-  const services = await ServiceModel.find();
+  const services = await ServiceModel.find().populate({
+    path: 'created_by',
+    select: 'first_name last_name avatar',
+  });
   if (!services) throw new Error('Failed to retrieve services');
   return services;
 };
