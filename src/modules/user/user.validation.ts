@@ -7,15 +7,21 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodUserSchema = z
   .object({
-    first_name: z.string({ required_error: 'First name is required' }).min(1).trim(),
-    last_name: z.string({ required_error: 'Last name is required' }).min(1).trim(),
-    email: z
-      .string({ required_error: 'Email is required' })
-      .email('Invalid email address')
-      .min(1)
+    first_name: z
+      .string({ required_error: 'First name is required.' })
+      .min(1, 'First name cannot be empty.')
       .trim(),
-    bio: z.string().min(1, 'Bio is required').trim().optional(),
-    designation: z.string().min(1, 'Designation is required').optional(),
+    last_name: z
+      .string({ required_error: 'Last name is required.' })
+      .min(1, 'Last name cannot be empty.')
+      .trim(),
+    email: z
+      .string({ required_error: 'Email is required.' })
+      .email('Invalid email address.')
+      .min(1, 'Email cannot be empty.')
+      .trim(),
+    bio: z.string().min(1, 'Bio cannot be empty when provided.').trim().optional(),
+    designation: z.string().min(1, 'Designation cannot be empty when provided.').trim().optional(),
   })
   .strict();
 

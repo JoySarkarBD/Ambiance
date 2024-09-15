@@ -20,9 +20,12 @@ const OptionsNameEnum = z.enum(
 const zodOptionSchema = z
   .object({
     name: OptionsNameEnum,
-    value: z.string({ required_error: 'Value is required' }).min(1).trim(),
+    value: z
+      .string({ required_error: 'Value is required' })
+      .min(1, 'Value cannot be empty.')
+      .trim(),
   })
-  .strict(); // Ensures no extra fields are present in the request
+  .strict();
 
 /**
  * Middleware to validate `name` and `value` fields in the request body.

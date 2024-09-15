@@ -7,8 +7,14 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodFaqSchema = z
   .object({
-    title: z.string({ required_error: 'Title is required' }).min(1).trim(),
-    description: z.string({ required_error: 'Description is required' }).min(1).trim(),
+    title: z
+      .string({ required_error: 'Please provide a title.' })
+      .min(1, 'Title cannot be empty.')
+      .trim(),
+    description: z
+      .string({ required_error: 'Please provide a description.' })
+      .min(1, 'Description cannot be empty.')
+      .trim(),
   })
   .strict();
 

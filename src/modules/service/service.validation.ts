@@ -7,29 +7,41 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodServiceSchema = z
   .object({
-    title: z.string({ required_error: 'Title is required' }).min(1).trim(),
-    description: z.string({ required_error: 'Description is required' }).min(1).trim(),
-    reviews: z.string({ required_error: 'Reviews is required' }).transform((val) => Number(val)),
-    rating: z.string({ required_error: 'Rating is required' }).transform((val) => Number(val)),
-    imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
-    searchKey: z.string({
-      required_error: 'Search key is required, but you can simply use empty string like this ""',
-    }),
-    showPerPage: z
+    title: z
+      .string({ required_error: 'Please provide a title.' })
+      .min(1, 'Title cannot be empty.')
+      .trim(),
+    description: z
+      .string({ required_error: 'Please provide a description.' })
+      .min(1, 'Description cannot be empty.')
+      .trim(),
+    reviews: z
+      .string({ required_error: 'Please provide the number of reviews.' })
+      .transform((val) => Number(val))
+      .refine((val) => !isNaN(val), 'Reviews must be a valid number.')
+      .refine((val) => val >= 0, 'Reviews cannot be negative.'),
+    rating: z
+      .string({ required_error: 'Please provide the rating.' })
+      .transform((val) => Number(val))
+      .refine((val) => !isNaN(val), 'Rating must be a valid number.')
+      .refine((val) => val >= 0 && val <= 5, 'Rating must be between 0 and 5.'),
+    imagesToRemove: z.union([z.string().trim(), z.array(z.string().trim())]).optional(),
+    searchKey: z
       .string({
-        required_error: 'Show per page is required',
+        required_error: 'Search key is required. You can use an empty string like "" if needed.',
       })
+      .trim(),
+    showPerPage: z
+      .string({ required_error: 'Please specify the number of items to show per page.' })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'showPerPage must be a positive number or undefined',
+        message: 'Show per page must be a positive number or undefined.',
       }),
     pageNo: z
-      .string({
-        required_error: 'Page no is required',
-      })
+      .string({ required_error: 'Please specify the page number.' })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'pageNo must be a positive number or undefined',
+        message: 'Page number must be a positive number or undefined.',
       }),
   })
   .strict();
