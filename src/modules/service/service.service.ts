@@ -23,7 +23,6 @@ const createService = async (data: Partial<IService>): Promise<IService> => {
  */
 const updateService = async (id: string, data: Partial<IService>): Promise<IService | null> => {
   const updatedService = await ServiceModel.findByIdAndUpdate(id, data, { new: true });
-  if (!updatedService) throw new Error('Failed to update service');
   return updatedService;
 };
 

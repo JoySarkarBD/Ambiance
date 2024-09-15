@@ -90,8 +90,6 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
 
   const { title, subject, skills, description, url } = req.body;
 
-  // Save banner
-
   // Save images
   const imagePaths = await saveImages(images);
 

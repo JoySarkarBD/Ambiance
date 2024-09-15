@@ -14,11 +14,7 @@ import {
 import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import {
-  validateImageRemovePath,
-  validateSearchQuery,
-  validateService,
-} from './service.validation';
+import { validateImageRemovePath, validateService } from './service.validation';
 
 // Initialize router
 const router = Router();
@@ -32,22 +28,6 @@ const router = Router();
  * @param {function} controller - ['getAllService']
  */
 router.get('/get-all-service', getAllService);
-
-/**
- * @route GET /api/v1/service/get-service/many
- * @description Get multiple service
- * @access Admin
- * @param {function} controller - ['getAllService']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get(
-  '/get-service/many',
-  isAuthorized,
-  isAllowed(['admin']),
-  validateSearchQuery,
-  getAllService
-);
 
 /**
  * @route GET /api/v1/service/get-service/:id
