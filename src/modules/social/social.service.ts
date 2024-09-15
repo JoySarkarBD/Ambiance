@@ -42,19 +42,6 @@ const deleteSocial = async (id: string): Promise<ISocial | null> => {
 };
 
 /**
- * Service function to delete multiple socials by IDs.
- *
- * @param ids - An array of IDs of socials to delete.
- * @returns {Promise<number>} - The number of deleted socials.
- * @throws {Error} - Throws an error if the deletion fails or no socials were deleted.
- */
-const deleteManySocial = async (ids: string[]): Promise<number> => {
-  const result = await SocialModel.deleteMany({ _id: { $in: ids } });
-  if (!result || result.deletedCount === 0) throw new Error('Failed to delete socials');
-  return result.deletedCount;
-};
-
-/**
  * Service function to retrieve a single social by ID.
  *
  * @param id - The ID of the social to retrieve.
@@ -105,7 +92,6 @@ export const socialServices = {
   createSocial,
   updateSocial,
   deleteSocial,
-  deleteManySocial,
   getSocialById,
   getAllSocial,
   getSocialByName,

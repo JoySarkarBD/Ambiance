@@ -10,7 +10,6 @@ import PostModel, { IPost } from './post.model';
 export const createPost = async (data: Partial<IPost>): Promise<IPost> => {
   const newPost = new PostModel(data);
   const savedPost = await newPost.save();
-  if (!savedPost) throw new Error('Failed to create post');
   return savedPost;
 };
 
@@ -23,7 +22,6 @@ export const createPost = async (data: Partial<IPost>): Promise<IPost> => {
  */
 const updatePost = async (id: string, data: object): Promise<IPost | null> => {
   const updatedPost = await PostModel.findByIdAndUpdate(id, data, { new: true });
-  if (!updatedPost) throw new Error('Failed to update post');
   return updatedPost;
 };
 
@@ -35,7 +33,6 @@ const updatePost = async (id: string, data: object): Promise<IPost | null> => {
  */
 const deletePost = async (id: string): Promise<IPost | null> => {
   const deletedPost = await PostModel.findByIdAndDelete(id);
-  if (!deletedPost) throw new Error('Failed to delete post');
   return deletedPost;
 };
 
@@ -52,28 +49,6 @@ const getPostById = async (id: string): Promise<IPost | null> => {
   });
   if (!post) throw new Error('Post not found');
   return post;
-};
-
-/**
- * Service function to retrieve multiple posts based on query parameters for admins.
- *
- * @param filter - The filter criteria for posts.
- * @param limit - Number of posts per page.
- * @param skip - Number of posts to skip for pagination.
- * @returns {Promise<{ data: IPost[], totalCount: number }>} - The retrieved posts and total count.
- */
-const getManyPost = async (filter: object, limit: number, skip: number) => {
-  const data = await PostModel.find(filter)
-    .populate({
-      path: 'created_by',
-      select: 'first_name last_name avatar',
-    })
-    .limit(limit)
-    .skip(skip)
-    .exec();
-  const totalCount = await PostModel.countDocuments(filter);
-  if (!data || data.length === 0) throw new Error('No posts found');
-  return { data, totalCount };
 };
 
 /**
@@ -95,6 +70,5 @@ export const postServices = {
   updatePost,
   deletePost,
   getPostById,
-  getManyPost,
   getAllPost,
 };

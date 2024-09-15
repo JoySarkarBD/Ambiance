@@ -7,22 +7,36 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodPostSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    subtitle: z.string().optional(),
-    description: z.string().min(1, 'Description is required').trim(),
-    imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
-    searchKey: z.string(),
+    title: z
+      .string({ required_error: 'Please provide a title.' })
+      .min(1, 'Title cannot be empty.')
+      .trim(),
+    subtitle: z.string({ required_error: 'Please provide a valid subtitle.' }).trim().optional(),
+    description: z
+      .string({ required_error: 'Please provide a description.' })
+      .min(1, 'Description cannot be empty.')
+      .trim(),
+    imagesToRemove: z.union([z.string().trim(), z.array(z.string().trim())]).optional(),
+    searchKey: z
+      .string({
+        required_error: 'Search key is required. You can use an empty string like "" if necessary.',
+      })
+      .trim(),
     showPerPage: z
-      .string()
+      .string({
+        required_error: 'Please specify the number of items to show per page.',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'showPerPage must be a positive number or undefined',
+        message: 'Show per page must be a positive number or undefined.',
       }),
     pageNo: z
-      .string()
+      .string({
+        required_error: 'Please specify the page number.',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'pageNo must be a positive number or undefined',
+        message: 'Page number must be a positive number or undefined.',
       }),
   })
   .strict();

@@ -2,20 +2,13 @@
 import { Router } from 'express';
 
 // Import controller from corresponding module
-import {
-  createMenu,
-  deleteManyMenu,
-  deleteMenu,
-  getAllMenu,
-  getMenuById,
-  updateMenu,
-} from './menu.controller';
+import { createMenu, deleteMenu, getAllMenu, getMenuById, updateMenu } from './menu.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import { validateMenu, validateSearchQuery } from './menu.validation';
+import { validateMenu } from './menu.validation';
 
 // Initialize router
 const router = Router();
@@ -29,15 +22,6 @@ const router = Router();
  * @param {function} controller - ['getAllMenu']
  */
 router.get('/get-all-menu', getAllMenu);
-
-/**
- * @route GET /api/v1/menu/get-menu/many
- * @description Get multiple menu
- * @access Admin
- * @param {function} controller - ['getAllMenu']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get('/get-menu/many', isAuthorized, isAllowed(['admin']), validateSearchQuery, getAllMenu);
 
 /**
  * @route GET /api/v1/menu/get-menu/:id
@@ -77,16 +61,6 @@ router.post('/create-menu', isAllowed(['admin']), validateMenu, createMenu);
  * @param {function} middlewares - ['isAuthorized', 'isAllowed']
  */
 router.put('/update-menu/:id', isAllowed(['admin']), validateId, validateMenu, updateMenu);
-
-/**
- * @route DELETE /api/v1/menu/delete-menu/many
- * @description Delete multiple menu
- * @access Admin
- * @param {function} controller - ['deleteManyMenu']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-menu/many', isAllowed(['admin']), validateIds, deleteManyMenu);
 
 /**
  * @route DELETE /api/v1/menu/delete-menu/:id

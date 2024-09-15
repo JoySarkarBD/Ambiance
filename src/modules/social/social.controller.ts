@@ -53,20 +53,6 @@ export const deleteSocial = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the deletion of multiple social.
- *
- * @param {Request} req - The request object containing an array of IDs of social to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManySocial = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to delete multiple social and get the result
-  await socialServices.deleteManySocial(req.body);
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
-});
-
-/**
  * Controller function to handle the retrieval of a single social by ID.
  *
  * @param {Request} req - The request object containing the ID of the social to retrieve in URL parameters.

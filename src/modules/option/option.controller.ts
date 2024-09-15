@@ -45,18 +45,6 @@ export const deleteOption = catchAsync(async (req: Request, res: Response) => {
 });
 
 /**
- * Controller function to handle the deletion of multiple options.
- *
- * @param {Request} req - The request object containing an array of IDs of options to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyOption = catchAsync(async (req: Request, res: Response) => {
-  const deletedCount = await optionServices.deleteManyOption(req.body.ids);
-  ServerResponse(res, true, 200, 'Resources deleted successfully', { deletedCount });
-});
-
-/**
  * Controller function to handle the retrieval of a single option by name.
  *
  * @param {Request} req - The request object containing the name of the option to retrieve in URL parameters.

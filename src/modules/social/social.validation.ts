@@ -28,7 +28,11 @@ const SocialMediaEnum = z.enum(
 const zodSocialSchema = z
   .object({
     name: SocialMediaEnum,
-    url: z.string().url('Invalid URL format').min(1, 'URL is required').trim(),
+    url: z
+      .string({ required_error: 'Please provide a URL.' })
+      .url('Please provide a valid URL format.')
+      .min(1, 'URL cannot be empty.')
+      .trim(),
   })
   .strict();
 

@@ -42,19 +42,6 @@ const deleteFaq = async (id: string): Promise<IFaq | null> => {
 };
 
 /**
- * Service function to delete multiple FAQs by IDs.
- *
- * @param {string[]} ids - An array of IDs of FAQs to delete.
- * @returns {Promise<number>} - The number of deleted FAQs.
- * @throws {Error} - Throws an error if the deletion fails or no FAQs were deleted.
- */
-const deleteManyFaq = async (ids: string[]): Promise<number> => {
-  const result = await FaqModel.deleteMany({ _id: { $in: ids } });
-  if (!result || result.deletedCount === 0) throw new Error('Failed to delete FAQs');
-  return result.deletedCount;
-};
-
-/**
  * Service function to retrieve a single FAQ by ID.
  *
  * @param {string} id - The ID of the FAQ to retrieve.
@@ -89,7 +76,6 @@ export const faqServices = {
   createFaq,
   updateFaq,
   deleteFaq,
-  deleteManyFaq,
   getFaqById,
   getAllFaq,
 };

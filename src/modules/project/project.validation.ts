@@ -7,26 +7,43 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodProjectSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    url: z.string().url('Invalid URL format').optional(),
-    subject: z.string().min(1, 'Subject is required').trim(),
+    title: z
+      .string({ required_error: 'Please provide a title.' })
+      .min(1, 'Title cannot be empty.')
+      .trim(),
+    url: z
+      .string({ required_error: 'Please provide a URL.' })
+      .url('Please provide a valid URL format.')
+      .trim()
+      .optional(),
+    subject: z
+      .string({ required_error: 'Please provide a subject.' })
+      .min(1, 'Subject cannot be empty.')
+      .trim(),
     skills: z
-      .array(z.string(), { required_error: 'skills is required' })
-      .min(1, 'skills must have at least one item'),
-    imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
-    description: z.string().min(1, 'Description is required').trim(),
-    searchKey: z.string(),
+      .array(z.string(), { required_error: 'Please provide at least one skill.' })
+      .min(1, 'Skills must have at least one item.'),
+    imagesToRemove: z.union([z.string().trim(), z.array(z.string().trim())]).optional(),
+    description: z
+      .string({ required_error: 'Please provide a description.' })
+      .min(1, 'Description cannot be empty.')
+      .trim(),
+    searchKey: z
+      .string({
+        required_error: 'Search key is required. You can use an empty string like "" if needed.',
+      })
+      .trim(),
     showPerPage: z
-      .string()
+      .string({ required_error: 'Please specify the number of items to show per page.' })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'showPerPage must be a positive number or undefined',
+        message: 'Show per page must be a positive number or undefined.',
       }),
     pageNo: z
-      .string()
+      .string({ required_error: 'Please specify the page number.' })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
-        message: 'pageNo must be a positive number or undefined',
+        message: 'Page number must be a positive number or undefined.',
       }),
   })
   .strict();

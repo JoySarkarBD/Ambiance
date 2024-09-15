@@ -114,6 +114,14 @@ export const createPost = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to create a new post and get the result
   const result = await postServices.createPost(postData);
 
+  // If there's an error to create post, then delete the saved images
+  if (!result) {
+    await deleteFile(bannerPath);
+    if (imagePaths.length > 0) {
+      await Promise.all(imagePaths.map((path) => deleteFile(path)));
+    }
+  }
+
   // Send a success response with the created resource data
   ServerResponse(res, true, 201, 'Post created successfully', result);
 });
@@ -162,6 +170,14 @@ export const updatePost = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to update the post by ID and get the result
   const result = await postServices.updatePost(id, updateData);
 
+  // If there's an error to update post, then delete the saved images
+  if (!result) {
+    await deleteFile(bannerPath);
+    if (updatedImages.length > 0) {
+      await Promise.all(updatedImages.map((path) => deleteFile(path)));
+    }
+  }
+
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Post updated successfully', result);
 });
@@ -183,59 +199,22 @@ export const deletePost = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Delete the post record from the database
-  await postServices.deletePost(id);
+  const result = await postServices.deletePost(id);
+
+  if (!result) {
+    throw new Error('Failed to delete post');
+  }
 
   // Delete the banner file
   await deleteFile(post.banner);
 
   // Delete all image files if images exist
-
   for (const imagePath of post.images) {
     await deleteFile(imagePath);
   }
 
   // Send a success response confirming the deletion
   ServerResponse(res, true, 200, 'Post deleted successfully');
-});
-
-/**
- * Controller function to handle the deletion of multiple post.
- *
- * @param {Request} req - The request object containing an array of IDs of post to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyPost = catchAsync(async (req: Request, res: Response) => {
-  // Expecting an object with an `ids` property
-  const { ids }: { ids: string[] } = req.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    throw new Error('No post IDs provided');
-  }
-
-  // Find all posts by IDs to get their associated file paths
-  const posts = await Post.find({ _id: { $in: ids } });
-
-  // Delete each post and associated files
-  await Promise.all(
-    posts.map(async (post) => {
-      // Delete the banner file
-      await deleteFile(post.banner);
-
-      // Delete all image files if images exist
-      if (post.images) {
-        for (const imagePath of post.images) {
-          await deleteFile(imagePath);
-        }
-      }
-
-      // Delete the post record from the database
-      await postServices.deletePost(req.body.ids);
-    })
-  );
-
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
 });
 
 /**
@@ -266,35 +245,7 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
  * @returns {void}
  */
 export const getAllPost = catchAsync(async (req: Request, res: Response) => {
-  const { user } = req; // Assume req.user is set by authentication middleware
-  const { searchKey, showPerPage, pageNo } = req.query;
-
-  const page = parseInt(pageNo as string, 10);
-  const limit = parseInt(showPerPage as string, 10);
-  const skip = (page - 1) * limit;
-
-  if (user?.role === 'admin') {
-    const filter: any = {};
-    if (searchKey) {
-      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
-      filter.$or = [{ title: { $regex: regex } }, { description: { $regex: regex } }];
-    }
-
-    const { data, totalCount } = await postServices.getManyPost(filter, limit, skip);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // Send response with pagination info
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
-      posts: data,
-      totalCount,
-      totalPages,
-      currentPage: page,
-    });
-  } else {
-    // Call the service method to get all posts for non-admin users
-    const result = await postServices.getAllPost();
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
-  }
+  // Call the service method to get all posts for non-admin users
+  const result = await postServices.getAllPost();
+  return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

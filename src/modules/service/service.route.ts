@@ -4,7 +4,6 @@ import { Router } from 'express';
 // Import controller from corresponding module
 import {
   createService,
-  deleteManyService,
   deleteService,
   getAllService,
   getServiceById,
@@ -12,14 +11,10 @@ import {
 } from './service.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import {
-  validateImageRemovePath,
-  validateSearchQuery,
-  validateService,
-} from './service.validation';
+import { validateImageRemovePath, validateService } from './service.validation';
 
 // Initialize router
 const router = Router();
@@ -33,22 +28,6 @@ const router = Router();
  * @param {function} controller - ['getAllService']
  */
 router.get('/get-all-service', getAllService);
-
-/**
- * @route GET /api/v1/service/get-service/many
- * @description Get multiple service
- * @access Admin
- * @param {function} controller - ['getAllService']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get(
-  '/get-service/many',
-  isAuthorized,
-  isAllowed(['admin']),
-  validateSearchQuery,
-  getAllService
-);
 
 /**
  * @route GET /api/v1/service/get-service/:id
@@ -95,16 +74,6 @@ router.put(
   validateImageRemovePath,
   updateService
 );
-
-/**
- * @route DELETE /api/v1/service/delete-service/many
- * @description Delete multiple service
- * @access Public
- * @param {function} controller - ['deleteManyService']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-service/many', isAllowed(['admin']), validateIds, deleteManyService);
 
 /**
  * @route DELETE /api/v1/service/delete-service/:id

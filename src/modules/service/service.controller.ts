@@ -122,6 +122,16 @@ export const createService = catchAsync(async (req: Request, res: Response) => {
 
   // Call the service method to create a new service and get the result
   const result = await serviceServices.createService(serviceData);
+
+  // If there's an error to create service, then delete the saved images
+  if (!result) {
+    await deleteFile(bannerPath);
+    await deleteFile(thumbnailPath);
+    if (imagePaths.length > 0) {
+      await Promise.all(imagePaths.map((path) => deleteFile(path)));
+    }
+  }
+
   // Send a success response with the created resource data
   ServerResponse(res, true, 201, 'Service created successfully', result);
 });
@@ -181,6 +191,15 @@ export const updateService = catchAsync(async (req: Request, res: Response) => {
 
   // Call the service method to update the service by ID and get the result
   const result = await serviceServices.updateService(id, updateData);
+
+  // If there's an error to update service, then delete the saved images
+  if (!result) {
+    await deleteFile(bannerPath);
+    await deleteFile(thumbnailPath);
+    if (updatedImages.length > 0) {
+      await Promise.all(updatedImages.map((path) => deleteFile(path)));
+    }
+  }
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Service updated successfully', result);
 });
@@ -203,7 +222,9 @@ export const deleteService = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Call the service method to delete the service by ID
-  await serviceServices.deleteService(id);
+  const result = await serviceServices.deleteService(id);
+
+  if (!result) throw new Error('Failed to delete service');
 
   // Delete the banner and thumbnail file
   await deleteFile(service.banner);
@@ -216,48 +237,6 @@ export const deleteService = catchAsync(async (req: Request, res: Response) => {
 
   // Send a success response confirming the deletion
   ServerResponse(res, true, 200, 'Service deleted successfully');
-});
-
-/**
- * Controller function to handle the deletion of multiple service.
- *
- * @param {Request} req - The request object containing an array of IDs of service to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyService = catchAsync(async (req: Request, res: Response) => {
-  // Expecting an object with an `ids` property
-  const { ids }: { ids: string[] } = req.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    throw new Error('No service IDs provided');
-  }
-
-  // Find all services by IDs to get their associated file paths
-  const services = await Service.find({ _id: { $in: ids } });
-
-  if (services === null) throw new Error('Services not found');
-
-  // Delete each service and associated files
-  await Promise.all(
-    services.map(async (service) => {
-      // Delete the banner and thumbnail file
-      await deleteFile(service.banner);
-      await deleteFile(service.thumbnail);
-
-      // Delete all image files if images exist
-      if (service.images) {
-        for (const imagePath of service.images) {
-          await deleteFile(imagePath);
-        }
-      }
-
-      // Delete the service record from the database
-      await serviceServices.deleteService(req.body.ids);
-    })
-  );
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
 });
 
 /**
@@ -286,35 +265,7 @@ export const getServiceById = catchAsync(async (req: Request, res: Response) => 
  * @returns {void}
  */
 export const getAllService = catchAsync(async (req: Request, res: Response) => {
-  const { user } = req; // Assume req.user is set by authentication middleware
-  const { searchKey, showPerPage, pageNo } = req.query;
-
-  const page = parseInt(pageNo as string, 10);
-  const limit = parseInt(showPerPage as string, 10);
-  const skip = (page - 1) * limit;
-
-  if (user?.role === 'admin') {
-    const filter: any = {};
-    if (searchKey) {
-      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
-      filter.$or = [{ title: { $regex: regex } }, { description: { $regex: regex } }];
-    }
-
-    const { data, totalCount } = await serviceServices.getManyService(filter, limit, skip);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // Send response with pagination info
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
-      posts: data,
-      totalCount,
-      totalPages,
-      currentPage: page,
-    });
-  } else {
-    // Call the service method to get all posts for non-admin users
-    const result = await serviceServices.getAllService();
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
-  }
+  // Call the service method to get all posts for non-admin users
+  const result = await serviceServices.getAllService();
+  return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

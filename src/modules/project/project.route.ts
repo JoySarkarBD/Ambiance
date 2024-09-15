@@ -4,7 +4,6 @@ import { Router } from 'express';
 // Import controller from corresponding module
 import {
   createProject,
-  deleteManyProject,
   deleteProject,
   getProject,
   getProjectById,
@@ -12,14 +11,10 @@ import {
 } from './project.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
-import {
-  validateImageRemovePath,
-  validateProject,
-  validateSearchQuery,
-} from './project.validation';
+import { validateImageRemovePath, validateProject } from './project.validation';
 
 // Initialize router
 const router = Router();
@@ -33,22 +28,6 @@ const router = Router();
  * @param {function} controller - ['getProject']
  */
 router.get('/get-all-project', getProject);
-
-/**
- * @route GET /api/v1/project/get-project/many
- * @description Get multiple project
- * @access Admin
- * @param {function} controller - ['getProject']
- * @param {function} validation - ['validateSearchQuery']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.get(
-  '/get-project/many',
-  isAuthorized,
-  isAllowed(['admin']),
-  validateSearchQuery,
-  getProject
-);
 
 /**
  * @route GET /api/v1/project/get-project/:id
@@ -95,16 +74,6 @@ router.put(
   validateImageRemovePath,
   updateProject
 );
-
-/**
- * @route DELETE /api/v1/project/delete-project/many
- * @description Delete multiple project
- * @access Admin
- * @param {function} controller - ['deleteManyProject']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-project/many', isAllowed(['admin']), validateIds, deleteManyProject);
 
 /**
  * @route DELETE /api/v1/project/delete-project/:id

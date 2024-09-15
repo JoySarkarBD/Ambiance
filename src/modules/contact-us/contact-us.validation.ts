@@ -7,12 +7,27 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodContactUsSchema = z
   .object({
-    name: z.string().min(1, 'Name is required').trim(),
-    email: z.string().email('Invalid email address').trim(),
-    phone: z.string().min(1, 'Phone number is required').trim(),
-    location: z.string().min(1, 'Location is required').trim(),
-    details: z.string().min(1, 'Location is required'),
-    iam: z.string().trim(),
+    name: z
+      .string({ required_error: 'Please provide your name.' })
+      .min(1, 'Name cannot be empty.')
+      .trim(),
+    email: z
+      .string({ required_error: 'Please provide your email address.' })
+      .email('Please enter a valid email address.')
+      .trim(),
+    phone: z
+      .string({ required_error: 'Please provide your phone number.' })
+      .min(1, 'Phone number cannot be empty.')
+      .trim(),
+    location: z
+      .string({ required_error: 'Please provide your location.' })
+      .min(1, 'Location cannot be empty.')
+      .trim(),
+    details: z
+      .string({ required_error: 'Please provide the details.' })
+      .min(1, 'Details cannot be empty.')
+      .trim(),
+    iam: z.string({ required_error: 'Please provide valid details for your bio.' }).trim(),
   })
   .strict();
 
