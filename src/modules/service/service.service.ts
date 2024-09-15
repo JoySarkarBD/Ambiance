@@ -10,7 +10,6 @@ import ServiceModel, { IService } from './service.model';
 const createService = async (data: Partial<IService>): Promise<IService> => {
   const newService = new ServiceModel(data);
   const savedService = await newService.save();
-  if (!savedService) throw new Error('Failed to create service');
   return savedService;
 };
 
@@ -37,21 +36,7 @@ const updateService = async (id: string, data: Partial<IService>): Promise<IServ
  */
 const deleteService = async (id: string): Promise<IService | null> => {
   const deletedService = await ServiceModel.findByIdAndDelete(id);
-  if (!deletedService) throw new Error('Failed to delete service');
   return deletedService;
-};
-
-/**
- * Service function to delete multiple services by IDs.
- *
- * @param ids - An array of IDs of services to delete.
- * @returns {Promise<number>} - The number of deleted services.
- * @throws {Error} - Throws an error if the deletion fails or no services were deleted.
- */
-const deleteManyService = async (ids: string[]): Promise<number> => {
-  const result = await ServiceModel.deleteMany({ _id: { $in: ids } });
-  if (!result || result.deletedCount === 0) throw new Error('Failed to delete services');
-  return result.deletedCount;
 };
 
 /**
@@ -117,7 +102,6 @@ export const serviceServices = {
   createService,
   updateService,
   deleteService,
-  deleteManyService,
   getServiceById,
   getManyService,
   getAllService,

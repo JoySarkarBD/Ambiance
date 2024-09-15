@@ -108,6 +108,13 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to create a new project and get the result
   const result = await projectServices.createProject(projectData);
 
+  // If there's an error to create project, then delete the saved images
+  if (!result) {
+    if (imagePaths.length > 0) {
+      await Promise.all(imagePaths.map((path) => deleteFile(path)));
+    }
+  }
+
   // Send a success response with the created resource data
   ServerResponse(res, true, 201, 'Project created successfully', result);
 });
@@ -143,8 +150,17 @@ export const updateProject = catchAsync(async (req: Request, res: Response) => {
     images: updatedImages,
     created_by: new mongoose.Types.ObjectId(req.user?._id),
   };
+
   // Call the service method to update the project by ID and get the result
   const result = await projectServices.updateProject(id, projectData);
+
+  // If there's an error to update project, then delete the saved images
+  if (!result) {
+    if (updatedImages.length > 0) {
+      await Promise.all(updatedImages.map((path) => deleteFile(path)));
+    }
+  }
+
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Project updated successfully', result);
 });
@@ -167,7 +183,11 @@ export const deleteProject = catchAsync(async (req: Request, res: Response) => {
   }
 
   // Delete the project record from the database
-  await projectServices.deleteProject(id);
+  const result = await projectServices.deleteProject(id);
+
+  if (!result) {
+    throw new Error('Failed to delete project');
+  }
 
   // Delete all image files if images exist
   for (const imagePath of project.images) {
@@ -175,43 +195,6 @@ export const deleteProject = catchAsync(async (req: Request, res: Response) => {
   }
 
   ServerResponse(res, true, 200, 'Project deleted successfully');
-});
-
-/**
- * Controller function to handle the deletion of multiple project.
- *
- * @param {Request} req - The request object containing an array of IDs of project to delete in the body.
- * @param {Response} res - The response object used to send the response.
- * @returns {void}
- */
-export const deleteManyProject = catchAsync(async (req: Request, res: Response) => {
-  // Expecting an object with an `ids` property
-  const { ids }: { ids: string[] } = req.body;
-
-  if (!Array.isArray(ids) || ids.length === 0) {
-    throw new Error('No project IDs provided');
-  }
-
-  // Find all projects by IDs to get their associated file paths
-  const projects = await Project.find({ _id: { $in: ids } });
-
-  // Delete each project and associated files
-  await Promise.all(
-    projects.map(async (project) => {
-      // Delete all image files if images exist
-      if (project.images) {
-        for (const imagePath of project.images) {
-          await deleteFile(imagePath);
-        }
-      }
-
-      // Delete the project record from the database
-      await projectServices.deleteProject(req.body.ids);
-    })
-  );
-
-  // Send a success response confirming the deletions
-  ServerResponse(res, true, 200, 'Resources deleted successfully');
 });
 
 /**

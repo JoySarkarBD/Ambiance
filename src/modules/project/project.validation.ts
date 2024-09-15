@@ -7,23 +7,29 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodProjectSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    url: z.string().url('Invalid URL format').optional(),
-    subject: z.string().min(1, 'Subject is required').trim(),
+    title: z.string({ required_error: 'Title is required' }).min(1).trim(),
+    url: z.string({ required_error: 'URL is required' }).url('Invalid URL format').optional(),
+    subject: z.string({ required_error: 'Subject is required' }),
     skills: z
-      .array(z.string(), { required_error: 'skills is required' })
+      .array(z.string(), { required_error: 'Skills is required' })
       .min(1, 'skills must have at least one item'),
     imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
-    description: z.string().min(1, 'Description is required').trim(),
-    searchKey: z.string(),
+    description: z.string({ required_error: 'Description is required' }).min(1).trim(),
+    searchKey: z.string({
+      required_error: 'Search key is required, but you can simply use empty string like this ""',
+    }),
     showPerPage: z
-      .string()
+      .string({
+        required_error: 'Show per page is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'showPerPage must be a positive number or undefined',
       }),
     pageNo: z
-      .string()
+      .string({
+        required_error: 'Page no is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'pageNo must be a positive number or undefined',

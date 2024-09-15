@@ -7,11 +7,11 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodContactUsSchema = z
   .object({
-    name: z.string().min(1, 'Name is required').trim(),
-    email: z.string().email('Invalid email address').trim(),
-    phone: z.string().min(1, 'Phone number is required').trim(),
-    location: z.string().min(1, 'Location is required').trim(),
-    details: z.string().min(1, 'Location is required'),
+    name: z.string({ required_error: 'Name is required' }).min(1).trim(),
+    email: z.string({ required_error: 'Email is required' }).email('Invalid email address').trim(),
+    phone: z.string({ required_error: 'Phone is required' }).min(1).trim(),
+    location: z.string({ required_error: 'Location is required' }).min(1).trim(),
+    details: z.string({ required_error: 'Details is required' }).min(1),
     iam: z.string().trim(),
   })
   .strict();

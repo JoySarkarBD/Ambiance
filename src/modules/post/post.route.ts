@@ -2,17 +2,10 @@
 import { Router } from 'express';
 
 // Import controller from corresponding module
-import {
-  createPost,
-  deleteManyPost,
-  deletePost,
-  getAllPost,
-  getPostById,
-  updatePost,
-} from './post.controller';
+import { createPost, deletePost, getAllPost, getPostById, updatePost } from './post.controller';
 
 //Import validation from corresponding module
-import { validateId, validateIds } from '../../handlers/common-zod-validator';
+import { validateId } from '../../handlers/common-zod-validator';
 import isAllowed from '../../middlewares/auth/is-allowed';
 import isAuthorized from '../../middlewares/auth/is-authorized';
 import { validateImageRemovePath, validatePost, validateSearchQuery } from './post.validation';
@@ -85,16 +78,6 @@ router.put(
   validateImageRemovePath,
   updatePost
 );
-
-/**
- * @route DELETE /api/v1/post/delete-post/many
- * @description Delete multiple post
- * @access Admin
- * @param {function} controller - ['deleteManyPost']
- * @param {function} validation - ['validateIds']
- * @param {function} middlewares - ['isAuthorized', 'isAllowed']
- */
-router.delete('/delete-post/many', isAllowed(['admin']), validateIds, deleteManyPost);
 
 /**
  * @route DELETE /api/v1/post/delete-post/:id

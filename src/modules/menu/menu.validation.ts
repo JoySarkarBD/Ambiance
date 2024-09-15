@@ -7,18 +7,24 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodMenuSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    url: z.string().url('Invalid URL format'),
+    title: z.string({ required_error: 'Title is required' }).min(1).trim(),
+    url: z.string({ required_error: 'URL is required' }).url('Invalid URL format'),
     target: z.string().min(1).trim().nullable().optional(),
-    searchKey: z.string(),
+    searchKey: z.string({
+      required_error: 'Search key is required, but you can simply use empty string like this ""',
+    }),
     showPerPage: z
-      .string()
+      .string({
+        required_error: 'Show per page is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'showPerPage must be a positive number or undefined',
       }),
     pageNo: z
-      .string()
+      .string({
+        required_error: 'Page no is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'pageNo must be a positive number or undefined',
@@ -83,4 +89,3 @@ export const validateSearchQuery = (req: Request, res: Response, next: NextFunct
   // If validation passed, proceed to the next middleware function
   return next();
 };
-

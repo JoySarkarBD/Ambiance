@@ -7,19 +7,25 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodPostSchema = z
   .object({
-    title: z.string().min(1, 'Title is required').trim(),
-    subtitle: z.string().optional(),
-    description: z.string().min(1, 'Description is required').trim(),
+    title: z.string({ required_error: 'Title is required' }).min(1).trim(),
+    subtitle: z.string({ required_error: 'Subtitle valid subtitle' }).optional(),
+    description: z.string({ required_error: 'Description is required' }).min(1).trim(),
     imagesToRemove: z.union([z.string(), z.array(z.string())]).optional(),
-    searchKey: z.string(),
+    searchKey: z.string({
+      required_error: 'Search key is required, but you can simply use empty string like this ""',
+    }),
     showPerPage: z
-      .string()
+      .string({
+        required_error: 'Show per page is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'showPerPage must be a positive number or undefined',
       }),
     pageNo: z
-      .string()
+      .string({
+        required_error: 'Page no is required',
+      })
       .transform((val) => (val ? parseInt(val, 10) : undefined))
       .refine((val) => val === undefined || val > 0, {
         message: 'pageNo must be a positive number or undefined',

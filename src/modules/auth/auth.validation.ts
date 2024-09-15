@@ -7,15 +7,23 @@ import zodErrorHandler from '../../handlers/zod-error-handler';
  */
 const zodAuthSchema = z
   .object({
-    email: z.string().email({ message: 'Invalid email address' }),
-    password: z.string().min(6, { message: 'Password must be at least 6 characters long' }),
-    first_name: z.string().min(1, { message: 'First name is required' }),
-    last_name: z.string().min(1, { message: 'Last name is required' }),
+    email: z
+      .string({ required_error: 'Email page is required' })
+      .email({ message: 'Invalid email address' }),
+    password: z
+      .string({ required_error: 'Password is required' })
+      .min(6, { message: 'Password must be at least 6 characters long' }),
+    first_name: z.string({ required_error: 'First name is required' }).min(1),
+    last_name: z.string({ required_error: 'Last name is required' }).min(1),
     previous_password: z
-      .string()
+      .string({ required_error: 'Previous password is required' })
       .min(6, { message: 'Previous password must be at least 6 characters long' }),
-    new_password: z.string().min(6, { message: 'New password must be at least 6 characters long' }),
-    resetPasswordToken: z.string().uuid({ message: 'Invalid rest password token format' }),
+    new_password: z
+      .string({ required_error: 'New password is required' })
+      .min(6, { message: 'New password must be at least 6 characters long' }),
+    resetPasswordToken: z
+      .string({ required_error: 'Reset password token is required' })
+      .uuid({ message: 'Invalid rest password token format' }),
   })
   .strict();
 

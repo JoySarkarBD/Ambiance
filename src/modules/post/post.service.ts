@@ -10,7 +10,6 @@ import PostModel, { IPost } from './post.model';
 export const createPost = async (data: Partial<IPost>): Promise<IPost> => {
   const newPost = new PostModel(data);
   const savedPost = await newPost.save();
-  if (!savedPost) throw new Error('Failed to create post');
   return savedPost;
 };
 
@@ -23,7 +22,6 @@ export const createPost = async (data: Partial<IPost>): Promise<IPost> => {
  */
 const updatePost = async (id: string, data: object): Promise<IPost | null> => {
   const updatedPost = await PostModel.findByIdAndUpdate(id, data, { new: true });
-  if (!updatedPost) throw new Error('Failed to update post');
   return updatedPost;
 };
 
@@ -35,7 +33,6 @@ const updatePost = async (id: string, data: object): Promise<IPost | null> => {
  */
 const deletePost = async (id: string): Promise<IPost | null> => {
   const deletedPost = await PostModel.findByIdAndDelete(id);
-  if (!deletedPost) throw new Error('Failed to delete post');
   return deletedPost;
 };
 
