@@ -216,12 +216,12 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
 /**
  * Controller function to handle the retrieval of multiple project.
  *
- * @param {Request} req - The request object containing query parameters for filtering.
+ * @param {Request} req - The request object containing query parameters for filtering, if any.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getProject = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get all projects for non-admin users
+  // Call the service method to get all projects
   const result = await projectServices.getAllProject();
   return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

@@ -240,12 +240,12 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
 /**
  * Controller function to handle the retrieval of multiple posts.
  *
- * @param {Request} req - The request object containing query parameters for filtering.
+ * @param {Request} req - The request object containing query parameters for filtering, if any.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getAllPost = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get all posts for non-admin users
+  // Call the service method to get all posts
   const result = await postServices.getAllPost();
   return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

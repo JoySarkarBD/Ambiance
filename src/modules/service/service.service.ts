@@ -66,6 +66,7 @@ const getAllService = async (): Promise<IService[]> => {
     select: 'first_name last_name avatar',
   });
   if (!services) throw new Error('Failed to retrieve services');
+
   return services;
 };
 

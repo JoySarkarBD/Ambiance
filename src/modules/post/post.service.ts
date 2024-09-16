@@ -61,7 +61,7 @@ const getAllPost = async (): Promise<IPost[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!posts || posts.length === 0) throw new Error('No posts found');
+  if (!posts) throw new Error('Failed to retrieve posts');
   return posts;
 };
 

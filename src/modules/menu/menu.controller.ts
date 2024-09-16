@@ -70,44 +70,12 @@ export const getMenuById = catchAsync(async (req: Request, res: Response) => {
 /**
  * Controller function to handle the retrieval of multiple menu.
  *
- * @param {Request} req - The request object containing query parameters for filtering.
+ * @param {Request} req - The request object containing query parameters for filtering, if any.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getAllMenu = catchAsync(async (req: Request, res: Response) => {
-  const { user } = req; // Assume req.user is set by authentication middleware
-  const { searchKey, showPerPage, pageNo } = req.query;
-
-  const page = parseInt(pageNo as string, 10);
-  const limit = parseInt(showPerPage as string, 10);
-  const skip = (page - 1) * limit;
-
-  if (user?.role === 'admin') {
-    const filter: any = {};
-    if (searchKey) {
-      const regex = new RegExp(searchKey as string, 'i'); // 'i' for case-insensitive
-      filter.$or = [
-        { title: { $regex: regex } },
-        { url: { $regex: regex } },
-        { target: { $regex: regex } },
-      ];
-    }
-
-    const { data, totalCount } = await menuServices.getManyMenu(filter, limit, skip);
-
-    // Calculate total pages
-    const totalPages = Math.ceil(totalCount / limit);
-
-    // Send response with pagination info
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', {
-      posts: data,
-      totalCount,
-      totalPages,
-      currentPage: page,
-    });
-  } else {
-    // Call the service method to get all posts for non-admin users
-    const result = await menuServices.getAllMenu();
-    return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
-  }
+  // Call the service method to get all posts
+  const result = await menuServices.getAllMenu();
+  return ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

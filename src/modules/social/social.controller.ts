@@ -75,7 +75,7 @@ export const getSocialById = catchAsync(async (req: Request, res: Response) => {
  * @returns {void}
  */
 export const getAllSocial = catchAsync(async (req: Request, res: Response) => {
-  // Call the service method to get multiple social based on query parameters and get the result
+  // Call the service method to get multiple social result
   const result = await socialServices.getAllSocial();
   // Send a success response with the retrieved resources data
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);

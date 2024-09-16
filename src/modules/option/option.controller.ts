@@ -13,6 +13,7 @@ import { optionServices } from './option.service';
  */
 export const createOption = catchAsync(async (req: Request, res: Response) => {
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
+  // Call the service method to create option
   const result = await optionServices.createOption(req.body);
   ServerResponse(res, true, 201, 'Option created successfully', result);
 });
@@ -27,6 +28,7 @@ export const createOption = catchAsync(async (req: Request, res: Response) => {
 export const updateOption = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
+  // Call the service method to update option by id
   const result = await optionServices.updateOption(id, req.body);
   ServerResponse(res, true, 200, 'Option updated successfully', result);
 });
@@ -40,6 +42,7 @@ export const updateOption = catchAsync(async (req: Request, res: Response) => {
  */
 export const deleteOption = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  // Call the service method to delete option by id
   await optionServices.deleteOption(id);
   ServerResponse(res, true, 200, 'Option deleted successfully');
 });
@@ -53,6 +56,7 @@ export const deleteOption = catchAsync(async (req: Request, res: Response) => {
  */
 export const getOptionByName = catchAsync(async (req: Request, res: Response) => {
   const { name } = req.params;
+  // Call the service method to get option by name
   const result = await optionServices.getOptionByName(name);
   ServerResponse(res, true, 200, 'Option retrieved successfully', result);
 });
@@ -60,11 +64,12 @@ export const getOptionByName = catchAsync(async (req: Request, res: Response) =>
 /**
  * Controller function to handle the retrieval of all options.
  *
- * @param {Request} req - The Express request object (not used in this case).
+ * @param {Request} req - The request object containing query parameters for filtering, if any.
  * @param {Response} res - The response object used to send the response.
  * @returns {void}
  */
 export const getAllOption = catchAsync(async (req: Request, res: Response) => {
+  // Call the service method to get all options
   const result = await optionServices.getAllOption();
   ServerResponse(res, true, 200, 'Resources retrieved successfully', result);
 });

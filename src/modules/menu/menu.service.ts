@@ -54,35 +54,7 @@ const getMenuById = async (id: string): Promise<IMenu | null> => {
 };
 
 /**
- * Service function to retrieve multiple menus based on query parameters.
- *
- * @param filter - The filter criteria for menus.
- * @param limit - Number of menus per page.
- * @param skip - Number of menus to skip for pagination.
- * @returns {Promise<{ data: Menu[], totalCount: number }>} - The retrieved menus and total count.
- */
-const getManyMenu = async (
-  filter: object,
-  limit: number,
-  skip: number
-): Promise<{ data: IMenu[]; totalCount: number }> => {
-  const data = await MenuModel.find(filter)
-    .populate({
-      path: 'created_by',
-      select: 'first_name last_name avatar',
-    })
-    .limit(limit)
-    .skip(skip)
-    .exec();
-  const totalCount = await MenuModel.countDocuments(filter);
-
-  if (!data || totalCount === 0) throw new Error('Failed to retrieve menus');
-
-  return { data, totalCount };
-};
-
-/**
- * Service function to retrieve all menus for non-admin users.
+ * Service function to retrieve all menus.
  *
  * @returns {Promise<Menu[]>} - The retrieved menus.
  */
@@ -100,6 +72,5 @@ export const menuServices = {
   updateMenu,
   deleteMenu,
   getMenuById,
-  getManyMenu,
   getAllMenu,
 };
