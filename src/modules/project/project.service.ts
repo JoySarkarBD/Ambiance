@@ -50,7 +50,6 @@ const getProjectById = async (id: string): Promise<IProject | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!project) throw new Error('Project not found');
   return project;
 };
 
@@ -65,7 +64,6 @@ const getAllProject = async (): Promise<IProject[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!projects) throw new Error('Failed to retrieve projects');
   return projects;
 };
 

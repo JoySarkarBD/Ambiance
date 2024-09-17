@@ -50,7 +50,6 @@ const getServiceById = async (id: string): Promise<IService | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!service) throw new Error('Service not found');
   return service;
 };
 
@@ -65,8 +64,6 @@ const getAllService = async (): Promise<IService[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!services) throw new Error('Failed to retrieve services');
-
   return services;
 };
 

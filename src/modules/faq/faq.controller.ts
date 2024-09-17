@@ -29,6 +29,7 @@ export const createFaq = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateFaq = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
+  // Ensure the user is properly attached to the request and set `created_by`
   req.body.created_by = new mongoose.Types.ObjectId(req.user?._id);
   // Call the service method to update the FAQ by ID
   const result = await faqServices.updateFaq(id, req.body);

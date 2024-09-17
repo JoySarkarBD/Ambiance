@@ -11,6 +11,7 @@ import { authServices } from './auth.service';
  * @returns {void}
  */
 export const loginAuth = catchAsync(async (req: Request, res: Response) => {
+  // Call the service to login admin user
   const result = await authServices.login(res, req.body);
   ServerResponse(res, true, 200, 'Login successful', result);
 });
@@ -23,6 +24,7 @@ export const loginAuth = catchAsync(async (req: Request, res: Response) => {
  * @returns {void}
  */
 export const registerAdmin = catchAsync(async (req: Request, res: Response) => {
+  // Call the service to register new admin
   const newAdmin = await authServices.registerAdmin(req.body);
   ServerResponse(res, true, 201, 'Admin registered successfully', newAdmin);
 });
@@ -35,6 +37,7 @@ export const registerAdmin = catchAsync(async (req: Request, res: Response) => {
  * @returns {void}
  */
 export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
+  // Call the service to send reset password link with token
   const result = await authServices.forgetPassword(req.body.email);
   ServerResponse(res, true, 200, result);
 });
@@ -49,10 +52,8 @@ export const forgetPasswordAuth = catchAsync(async (req: Request, res: Response)
 export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) => {
   const { new_password } = req.body;
   const { resetPasswordToken } = req.query;
-
   // Call the service to reset the user's password using the token
   await authServices.resetPassword(resetPasswordToken as string, new_password);
-
   ServerResponse(res, true, 200, 'Password reset successfully');
 });
 
@@ -65,9 +66,7 @@ export const resetPasswordAuth = catchAsync(async (req: Request, res: Response) 
  */
 export const updatePassword = catchAsync(async (req: Request, res: Response) => {
   const { previous_password, new_password } = req.body;
-
   // Call the service to update the user old password
   await authServices.updatePassword(req, previous_password, new_password);
-
   ServerResponse(res, true, 200, 'Password update successfully');
 });

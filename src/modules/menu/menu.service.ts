@@ -49,7 +49,6 @@ const getMenuById = async (id: string): Promise<IMenu | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!menu) throw new Error('Menu not found');
   return menu;
 };
 
@@ -63,7 +62,6 @@ const getAllMenu = async (): Promise<IMenu[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!menus) throw new Error('Failed to retrieve menus');
   return menus;
 };
 

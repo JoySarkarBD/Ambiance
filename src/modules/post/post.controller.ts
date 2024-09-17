@@ -114,12 +114,13 @@ export const createPost = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to create a new post and get the result
   const result = await postServices.createPost(postData);
 
-  // If there's an error to create post, then delete the saved images
+  // If there's an error to create post, then delete the saved images and throw an error
   if (!result) {
     await deleteFile(bannerPath);
     if (imagePaths.length > 0) {
       await Promise.all(imagePaths.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to create post');
   }
 
   // Send a success response with the created resource data
@@ -170,12 +171,13 @@ export const updatePost = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to update the post by ID and get the result
   const result = await postServices.updatePost(id, updateData);
 
-  // If there's an error to update post, then delete the saved images
+  // If there's an error to update post, then delete the saved images and throw an error
   if (!result) {
     await deleteFile(bannerPath);
     if (updatedImages.length > 0) {
       await Promise.all(updatedImages.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to update post');
   }
 
   // Send a success response with the updated resource data
@@ -228,11 +230,6 @@ export const getPostById = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
   // Call the service method to get the post by ID and get the result
   const result = await postServices.getPostById(id);
-
-  if (!result) {
-    throw new Error('Post not found');
-  }
-
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Post retrieved successfully', result);
 });

@@ -53,7 +53,6 @@ const getSocialById = async (id: string): Promise<ISocial | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!social) throw new Error('Social not found');
   return social;
 };
 
@@ -68,7 +67,6 @@ const getAllSocial = async (): Promise<ISocial[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!socials) throw new Error('Failed to retrieve socials');
   return socials;
 };
 
@@ -84,7 +82,6 @@ const getSocialByName = async (name: string): Promise<ISocial | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!social) throw new Error('Social not found');
   return social;
 };
 

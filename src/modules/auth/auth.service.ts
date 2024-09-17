@@ -105,7 +105,9 @@ const registerAdmin = async (data: {
     showData: true,
   });
 
-  await newAdmin.save();
+  const result = await newAdmin.save();
+
+  if (!result) throw new Error('Failed to register admin');
 
   return newAdmin;
 };
@@ -173,7 +175,9 @@ const resetPassword = async (resetPasswordToken: string, new_password: string) =
   user.password = hashedNewPassword;
   user.resetPasswordToken = '';
   user.resetPasswordTokenExpires = undefined;
-  await user.save();
+  const result = await user.save();
+
+  if (!result) throw new Error('Failed to reset password');
 };
 
 /**
@@ -203,7 +207,9 @@ const updatePassword = async (req: Request, previous_password: string, new_passw
 
   // Update the user's password
   user.password = hashedNewPassword;
-  await user.save();
+  const result = await user.save();
+
+  if (!result) throw new Error('Failed to update password');
 
   return user;
 };

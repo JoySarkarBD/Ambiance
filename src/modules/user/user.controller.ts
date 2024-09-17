@@ -90,7 +90,6 @@ export const updateUser = catchAsync(async (req: Request, res: Response) => {
 export const aboutUser = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to get the user information
   const result = await userServices.aboutUser();
-
   // Send a success response with the user information
   ServerResponse(res, true, 200, 'About user details retrieved successfully', result);
 });
@@ -104,10 +103,8 @@ export const aboutUser = catchAsync(async (req: Request, res: Response) => {
  */
 export const updateShowData = catchAsync(async (req: Request, res: Response) => {
   const { id } = req.params;
-
   // Call the service method to update the user's showData field
   const result = await userServices.updateShowData(id);
-
   // Send a success response with the updated user data
   ServerResponse(res, true, 200, 'User showData updated successfully', result);
 });

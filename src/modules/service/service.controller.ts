@@ -120,7 +120,7 @@ export const createService = catchAsync(async (req: Request, res: Response) => {
     created_by: new mongoose.Types.ObjectId(req.user?._id),
   };
 
-  // Call the service method to create a new service and get the result
+  // Call the service method to create a new service and get the result and throw an error
   const result = await serviceServices.createService(serviceData);
 
   // If there's an error to create service, then delete the saved images
@@ -130,6 +130,7 @@ export const createService = catchAsync(async (req: Request, res: Response) => {
     if (imagePaths.length > 0) {
       await Promise.all(imagePaths.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to create service');
   }
 
   // Send a success response with the created resource data
@@ -192,14 +193,16 @@ export const updateService = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to update the service by ID and get the result
   const result = await serviceServices.updateService(id, updateData);
 
-  // If there's an error to update service, then delete the saved images
+  // If there's an error to update service, then delete the saved images and throw an error
   if (!result) {
     await deleteFile(bannerPath);
     await deleteFile(thumbnailPath);
     if (updatedImages.length > 0) {
       await Promise.all(updatedImages.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to update service');
   }
+
   // Send a success response with the updated resource data
   ServerResponse(res, true, 200, 'Service updated successfully', result);
 });
@@ -250,9 +253,6 @@ export const getServiceById = catchAsync(async (req: Request, res: Response) => 
   const { id } = req.params;
   // Call the service method to get the service by ID and get the result
   const result = await serviceServices.getServiceById(id);
-
-  if (result === null) throw new Error('Service not found');
-
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Service retrieved successfully', result);
 });

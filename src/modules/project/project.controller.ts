@@ -106,11 +106,12 @@ export const createProject = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to create a new project and get the result
   const result = await projectServices.createProject(projectData);
 
-  // If there's an error to create project, then delete the saved images
+  // If there's an error to create project, then delete the saved images and throw an error
   if (!result) {
     if (imagePaths.length > 0) {
       await Promise.all(imagePaths.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to create project');
   }
 
   // Send a success response with the created resource data
@@ -152,11 +153,12 @@ export const updateProject = catchAsync(async (req: Request, res: Response) => {
   // Call the service method to update the project by ID and get the result
   const result = await projectServices.updateProject(id, projectData);
 
-  // If there's an error to update project, then delete the saved images
+  // If there's an error to update project, then delete the saved images and throw an error
   if (!result) {
     if (updatedImages.length > 0) {
       await Promise.all(updatedImages.map((path) => deleteFile(path)));
     }
+    throw new Error('Failed to update project');
   }
 
   // Send a success response with the updated resource data
@@ -206,9 +208,6 @@ export const getProjectById = catchAsync(async (req: Request, res: Response) => 
   const { id } = req.params;
   // Call the service method to get the project by ID and get the result
   const result = await projectServices.getProjectById(id);
-
-  if (result === null) throw new Error('Project not found');
-
   // Send a success response with the retrieved resource data
   ServerResponse(res, true, 200, 'Project retrieved successfully', result);
 });

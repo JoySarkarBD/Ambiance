@@ -47,7 +47,6 @@ const getPostById = async (id: string): Promise<IPost | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!post) throw new Error('Post not found');
   return post;
 };
 
@@ -61,7 +60,6 @@ const getAllPost = async (): Promise<IPost[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!posts) throw new Error('Failed to retrieve posts');
   return posts;
 };
 

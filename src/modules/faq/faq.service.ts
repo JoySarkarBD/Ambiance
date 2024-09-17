@@ -53,7 +53,6 @@ const getFaqById = async (id: string): Promise<IFaq | null> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!faq) throw new Error('FAQ not found');
   return faq;
 };
 
@@ -68,7 +67,6 @@ const getAllFaq = async (): Promise<IFaq[]> => {
     path: 'created_by',
     select: 'first_name last_name avatar',
   });
-  if (!faqs) throw new Error('Failed to retrieve FAQs');
   return faqs;
 };
 

@@ -17,7 +17,7 @@ const updateUser = async (res: Response, id: string, data: object) => {
   const user = await UserModel.findByIdAndUpdate(id, data, { new: true });
 
   if (!user) {
-    throw new Error('User not found');
+    throw new Error('User not found or failed to update');
   }
 
   // Generate JWT token
@@ -140,10 +140,6 @@ const aboutUser = async () => {
     groupStage,
   ]);
 
-  if (!user || user.length === 0) {
-    throw new Error('User not found');
-  }
-
   return user[0];
 };
 
@@ -159,7 +155,7 @@ const updateShowData = async (id: string) => {
   const user = await UserModel.findOne({ _id: id, showData: false });
 
   if (!user) {
-    throw new Error('User not found or showData is not true');
+    throw new Error('User not found or show data is not true');
   }
 
   // Reverse the `showData` field (if true, set to false, and vice versa)
