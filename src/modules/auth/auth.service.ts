@@ -1,8 +1,9 @@
-import bcrypt from 'bcrypt';
 import { Request, Response } from 'express';
 import ms from 'ms';
 import { v4 as uuidv4 } from 'uuid';
 import config from '../../config/config';
+import CompareInfo from '../../utils/bcrypt/compare-info';
+import HashInfo from '../../utils/bcrypt/hash-info';
 import SendEmail from '../../utils/email/send-email';
 import EncodeToken from '../../utils/jwt/encode-token';
 import User from '../user/user.model';
@@ -25,7 +26,7 @@ const login = async (res: Response, data: { email: string; password: string }) =
   }
 
   // Check if the password matches
-  const isPasswordValid = await bcrypt.compare(password, user.password);
+  const isPasswordValid = await CompareInfo(password, user.password);
   if (!isPasswordValid) {
     throw new Error('Invalid email or password.');
   }
@@ -94,7 +95,7 @@ const registerAdmin = async (data: {
   }
 
   // Hash the password and create the admin
-  const hashedPassword = await bcrypt.hash(password, config.SALT_ROUNDS);
+  const hashedPassword = await HashInfo(password);
   const newAdmin = new User({
     first_name,
     last_name,
@@ -169,7 +170,7 @@ const resetPassword = async (resetPasswordToken: string, new_password: string) =
   }
 
   // Hash the new password
-  const hashedNewPassword = await bcrypt.hash(new_password, config.SALT_ROUNDS);
+  const hashedNewPassword = await HashInfo(new_password);
 
   // Update the user's password and clear the reset token
   user.password = hashedNewPassword;
@@ -197,13 +198,13 @@ const updatePassword = async (req: Request, previous_password: string, new_passw
   }
 
   // Check if the previous password matches the current password
-  const isMatch = await bcrypt.compare(previous_password, user.password);
+  const isMatch = await CompareInfo(previous_password, user.password);
   if (!isMatch) {
     throw new Error('Previous password does not match');
   }
 
   // Hash the new password
-  const hashedNewPassword = await bcrypt.hash(new_password, config.SALT_ROUNDS);
+  const hashedNewPassword = await HashInfo(new_password);
 
   // Update the user's password
   user.password = hashedNewPassword;
