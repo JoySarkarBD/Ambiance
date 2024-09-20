@@ -13,7 +13,6 @@ interface IUser extends Document {
   status?: 'active' | 'inactive';
   showData: boolean;
   role: 'admin' | 'user';
-  activationToken?: string;
   resetPasswordToken?: string;
   resetPasswordTokenExpires?: Date;
 }
@@ -63,10 +62,6 @@ const UserSchema: Schema<IUser> = new Schema(
       type: String,
       enum: ['admin', 'user'],
       required: true,
-    },
-    activationToken: {
-      type: String,
-      default: '',
     },
     resetPasswordToken: {
       type: String,
