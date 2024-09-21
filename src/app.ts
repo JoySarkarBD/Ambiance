@@ -37,7 +37,7 @@ app.use(morgan('dev'));
 // Request Rate Limiting
 const limiter = rateLimit({
   windowMs: config.REQUEST_LIMIT_TIME,
-  max: process.env.NODE_ENV !== 'production'? Infinity : config.REQUEST_LIMIT_NUMBER , // unlimited in development
+  max: config.NODE_ENV !== 'production' ? Infinity : config.REQUEST_LIMIT_NUMBER, // unlimited in any mode except production
   standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
@@ -48,7 +48,7 @@ app.use(limiter);
 app.use(express.static(publicDirPath));
 
 // Recursive function to load routes from nested folders
-export const routes: {module: string; path: string; method: string; time: number }[] = [];
+export const routes: { module: string; path: string; method: string; time: number }[] = [];
 
 const loadRoutes = (basePath: string, baseRoute: string) => {
   if (fs.existsSync(basePath)) {
@@ -69,8 +69,8 @@ const loadRoutes = (basePath: string, baseRoute: string) => {
         // Dynamically load the route file
         const routeModule = require(itemPath);
 
-        // Log routes in development mode
-        if (config.NODE_ENV === 'development') {
+        // Log routes in any mode except production
+        if (config.NODE_ENV !== 'production') {
           const end = performance.now();
           const loadTime = end - start;
 
@@ -83,7 +83,7 @@ const loadRoutes = (basePath: string, baseRoute: string) => {
                 );
                 methods.forEach((method) => {
                   routes.push({
-                  module: item.split('.')[0],
+                    module: item.split('.')[0],
                     path: `${baseRoute}${layer.route.path}`,
                     method,
                     time: loadTime,
