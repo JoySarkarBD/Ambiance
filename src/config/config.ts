@@ -14,6 +14,8 @@ interface Config {
   EMAIL_HOST: string;
   EMAIL_PORT: number;
   EMAIL_USER: string;
+  EMAIL_FROM: string;
+  EMAIL_ADMIN: string;
   EMAIL_PASSWORD: string;
   MAX_JSON_SIZE: string;
   MAX_FILE_SIZE: number;
@@ -36,6 +38,8 @@ const config: Config = {
   EMAIL_HOST: process.env.EMAIL_HOST as string,
   EMAIL_PORT: parseInt(process.env.EMAIL_PORT as string, 10),
   EMAIL_USER: process.env.EMAIL_USER as string,
+  EMAIL_FROM: process.env.EMAIL_FROM as string,
+  EMAIL_ADMIN: process.env.EMAIL_FROM as string,
   EMAIL_PASSWORD: process.env.EMAIL_PASSWORD as string,
   MAX_JSON_SIZE: process.env.MAX_JSON_SIZE as string,
   MAX_FILE_SIZE: parseInt(process.env.MAX_FILE_SIZE as string, 10),

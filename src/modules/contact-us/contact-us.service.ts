@@ -18,7 +18,7 @@ const createContactUs = async (data: { email: string; name: string; [key: string
 
   // Prepare email options for admin
   const adminEmailOptions = {
-    to: config.EMAIL_USER, // Admin email
+    to: config.EMAIL_ADMIN, // Admin email
     text: `New contact-us message from ${data.name}. Details: ${JSON.stringify(data)}`,
     subject: 'New Contact Us Message',
     html: `<p>You have a new contact-us message from ${data.name}.</p><p>Details:</p><pre>${JSON.stringify(data, null, 2)}</pre>`,
