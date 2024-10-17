@@ -17,7 +17,8 @@ const SocialMediaEnum = z.enum(
   {
     // Custom error message for invalid platform names
     errorMap: () => ({
-      message: 'Please select a valid social media platform',
+      message:
+        'Please select a valid social media platform: Facebook, Twitter, Instagram,LinkedIn, YouTube, TikTok and Pinterest.',
     }),
   }
 );
