@@ -15,7 +15,7 @@ const router = Router();
 // Define route handlers
 
 /**
- * @route GET /api/v1/slider/get-slider/many
+ * @route GET /api/v1/slider/get-slider
  * @description Get multiple slider
  * @access Public
  * @param {function} validation - ['validateSlider']
